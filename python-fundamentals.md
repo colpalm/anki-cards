@@ -1,6 +1,13 @@
 # Python Fundamentals Anki Cards
 
-## Card 1: Floor Division with Negatives
+## Sources
+- [NeetCode Python for Beginners](https://neetcode.io/problems/python-hello-world/question)
+- [NeetCode Python for Coding Interviews](https://neetcode.io/problems/python-sort-ascending/question)
+
+
+## Cards
+
+### Floor Division with Negatives
 **Front:**
 What is the result of `-7 // 2` in Python? Why?
 
@@ -15,7 +22,7 @@ Contrast with integer division in C/Java which truncates toward zero (would give
 
 ---
 
-## Card 2: Boolean Operator Precedence
+### Boolean Operator Precedence
 **Front:**
 What is the order of precedence for Python's boolean operators `not`, `and`, `or`?
 
@@ -34,7 +41,7 @@ Use parentheses to make intent clear.
 
 ---
 
-## Card 3: Falsy Values
+### Falsy Values
 **Front:**
 List all the falsy values in Python.
 
@@ -53,7 +60,7 @@ Pythonic: `if my_list:` instead of `if len(my_list) > 0:`
 
 ---
 
-## Card 4: Mutable Default Argument Pitfall
+### Mutable Default Argument Pitfall
 **Front:**
 What's wrong with this code?
 ```python
@@ -81,7 +88,7 @@ def append_to(item, lst=None):
 
 ---
 
-## Card 5: String Reversal with Slicing
+### String Reversal with Slicing
 **Front:**
 How do you reverse a string in Python using slicing? Explain why it works.
 
@@ -101,7 +108,7 @@ Slicing syntax: `s[start:end:step]`
 
 ---
 
-## Card 6: Negative Indexing
+### Negative Indexing
 **Front:**
 Given `lst = [10, 20, 30, 40, 50]`, what do these return?
 - `lst[-1]`
@@ -117,7 +124,7 @@ Negative indices count backward from the end, starting at `-1`.
 
 ---
 
-## Card 7: Dictionary .get() Method
+### Dictionary .get() Method
 **Front:**
 What's the difference between `d[key]` and `d.get(key, default)`?
 
@@ -140,7 +147,7 @@ freq[x] = freq.get(x, 0) + 1
 
 ---
 
-## Card 8: Empty Set Creation
+### Empty Set Creation
 **Front:**
 How do you create an empty set in Python? What does `{}` create?
 
@@ -162,7 +169,7 @@ type({1})     # <class 'set'>
 
 ---
 
-## Card 9: Generator Expression vs List Comprehension
+### Generator Expression vs List Comprehension
 **Front:**
 What's the difference between these two? When would you use one over the other?
 ```python
@@ -191,7 +198,7 @@ Second: **Generator expression** — yields values one at a time, never storing 
 
 ---
 
-## Card 10: Different Error Types
+### Different Error Types
 **Front:**
 Describe the three types of errors:
 - **Syntax Error**
@@ -205,7 +212,7 @@ Describe the three types of errors:
 
 ---
 
-## Card 11: .sort() vs sorted()
+### .sort() vs sorted()
 **Front:**
 What's the difference between `list.sort()` and `sorted(list)`?
 
@@ -230,7 +237,7 @@ Both have O(n log n) time complexity (Timsort).
 
 ---
 
-## Card 12: Reverse Sorting
+### Reverse Sorting
 **Front:**
 How do you sort a list in descending order in Python? Show two approaches.
 
@@ -254,7 +261,7 @@ Prefer `reverse=True` — cleaner and single operation.
 
 ---
 
-## Card 13: Custom Sort with key Parameter
+### Custom Sort with key Parameter
 **Front:**
 How does the `key` parameter work in Python's `sort()`/`sorted()`? 
 
@@ -282,7 +289,7 @@ sorted(fruits, key=str.lower)   # ['Apple', 'banana']
 
 ---
 
-## Card 14: Lambda Functions for Sorting
+### Lambda Functions for Sorting
 **Front:**
 What is a lambda function? Write a lambda to sort tuples by their second element.
 
@@ -308,7 +315,7 @@ Use lambdas for simple, one-off sort keys.
 
 ---
 
-## Card 15: String Sorting (Lexicographical)
+### String Sorting (Lexicographical)
 **Front:**
 How are strings sorted by default in Python? What's the result of sorting `["grape", "Apple", "banana"]`?
 
@@ -327,6 +334,90 @@ For case-insensitive sort:
 ```python
 fruits.sort(key=str.lower)
 # Result: ['Apple', 'banana', 'grape']
+```
+
+---
+
+### Unpacking
+**Front:**
+What is unpacking in Python? Show how to unpack a list/tuple, swap variables, and unpack in a loop.
+
+**Back:**
+**Unpacking** extracts values from an iterable into individual variables.
+
+```python
+# Basic unpacking
+point = [3, 5]
+x, y = point  # x = 3, y = 5
+
+# Swap variables (no temp needed!)
+a, b = b, a
+
+# Loop unpacking
+points = [[0, 0], [2, 4], [3, 6]]
+for x, y in points:
+    print(f"x: {x}, y: {y}")
+```
+
+Must have matching number of variables:
+```python
+x, y = [1, 2, 3]  # ValueError: too many values to unpack
+```
+
+---
+
+### Enumerate
+**Front:**
+What does `enumerate()` do? Why use it instead of `range(len(list))`?
+
+**Back:**
+`enumerate()` returns an iterator of `(index, element)` tuples.
+
+```python
+names = ['Alice', 'Bob', 'Charlie']
+
+# Pythonic way
+for i, name in enumerate(names):
+    print(i, name)
+
+# Instead of
+for i in range(len(names)):
+    print(i, names[i])
+```
+
+More readable and less error-prone than manual indexing.
+
+Optional start index:
+```python
+for i, name in enumerate(names, start=1):
+    print(i, name)  # 1 Alice, 2 Bob, 3 Charlie
+```
+
+---
+
+### Zip
+**Front:**
+What does `zip()` do? What is its time and space complexity?
+
+**Back:**
+`zip()` iterates over multiple iterables in parallel, yielding tuples.
+
+```python
+names = ['Alice', 'Bob', 'Charlie']
+scores = [90, 85, 88]
+
+for name, score in zip(names, scores):
+    print(f"{name}: {score}")
+# Alice: 90
+# Bob: 85
+# Charlie: 88
+```
+
+**Complexity:** O(1) time and space — returns an iterator, doesn't create a list in memory.
+
+Stops at shortest iterable:
+```python
+list(zip([1, 2, 3], ['a', 'b']))  # [(1, 'a'), (2, 'b')]
 ```
 
 ---
