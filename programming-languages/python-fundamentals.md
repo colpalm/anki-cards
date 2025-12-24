@@ -613,3 +613,103 @@ if value in my_list:
 
 ---
 
+### Using a List as a Stack in Python
+**Front:**
+How do you use a list as a stack in Python? What operations do you use and what are their time complexities?
+
+**Back:**
+Python has no built-in stack—use a list with **LIFO** (Last In, First Out) semantics.
+
+```python
+stack = []
+stack.append(1)      # Push
+stack.append(2)
+top = stack[-1]      # Peek (2)
+removed = stack.pop() # Pop (2)
+```
+
+**Time Complexity:**
+- `append(x)`: O(1)
+- `pop()`: O(1)
+- `[-1]` (peek): O(1)
+- `len()`: O(1)
+
+---
+
+### Python Queue with collections.deque
+**Front:**
+How do you implement a queue in Python? Show the import, basic operations, and explain the ordering.
+
+**Back:**
+Use `collections.deque` for **FIFO** (First In, First Out) queues.
+
+```python
+from collections import deque
+
+queue = deque()
+queue.append(1)      # Enqueue: [1]
+queue.append(2)      # Enqueue: [1, 2]
+first = queue.popleft()  # Dequeue: returns 1, queue is [2]
+```
+
+- `append()` adds to the right (back of queue)
+- `popleft()` removes from the left (front of queue)
+
+Both operations are O(1).
+
+---
+
+### Why deque Over List for Queues
+**Front:**
+Why should you use `collections.deque` instead of a list for queue operations in Python?
+
+**Back:**
+**Lists are dynamic arrays**, **deques are doubly linked lists**.
+
+Removing from the front:
+- `list.pop(0)`: **O(n)** — must shift all remaining elements left
+- `deque.popleft()`: **O(1)** — just update pointers
+
+```python
+# Bad - O(n) per operation
+queue = []
+queue.append(1)
+queue.pop(0)  # Shifts everything
+
+# Good - O(1) per operation
+from collections import deque
+queue = deque()
+queue.append(1)
+queue.popleft()  # No shifting
+```
+
+**Note:** For multi-threaded code, use `queue.Queue` which provides thread-safe operations.
+
+---
+
+### deque Operations and Time Complexity
+**Front:**
+What are the four `deque` operations for adding/removing from both ends, and their time complexities? What about indexing?
+
+**Back:**
+`deque` is a **double-ended queue**—efficient operations at both ends.
+
+**Operations (all O(1)):**
+- `append(x)` — add to right
+- `appendleft(x)` — add to left
+- `pop()` — remove from right
+- `popleft()` — remove from left
+
+**Indexing:**
+- `[0]`, `[-1]` (first/last): **O(1)**
+- `[i]` (arbitrary index): **O(n)**
+
+```python
+from collections import deque
+d = deque([1, 2, 3])
+d.appendleft(0)  # [0, 1, 2, 3]
+d.pop()          # [0, 1, 2], returns 3
+```
+
+---
+
