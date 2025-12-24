@@ -12,6 +12,7 @@ This repository contains Anki flashcards for building deep, lasting knowledge ac
 - Lead with the concept, use concrete examples to illustrate
 - Keep cards atomic - one idea per card
 - Avoid overly specific examples that don't generalize
+- Note: Feel free to recommend cards if you think it is important and related to a current topic even if it is not present in the notes.
 
 ### Format
 Reference existing cards in the repo for format and style. General structure:

@@ -422,3 +422,194 @@ list(zip([1, 2, 3], ['a', 'b']))  # [(1, 'a'), (2, 'b')]
 
 ---
 
+### List pop() vs pop(index) Time Complexity
+**Front:**
+What's the time complexity difference between `list.pop()` and `list.pop(index)`? Why?
+
+**Back:**
+- `pop()` — O(1): Removes from the end, no shifting needed
+- `pop(index)` — O(n): Must shift all elements after the removed index
+
+```python
+nums = [1, 2, 3, 4, 5]
+nums.pop()      # O(1) - removes 5
+nums.pop(0)     # O(n) - removes 1, shifts [2,3,4] left
+```
+
+**Implication:** When you need a LIFO structure (stack), use `append()`/`pop()`. Avoid `pop(0)` for queues — use `collections.deque` instead.
+
+---
+
+### List extend() vs Concatenation
+**Front:**
+What's the difference between `list.extend(other)` and `list + other`?
+
+**Back:**
+`extend()`: Modifies the list **in-place**, returns `None`
+- Time: O(m) where m = len(other)
+- Space: O(1) — no new list created
+
+`+` concatenation: Creates a **new list**
+- Time: O(n + m)
+- Space: O(n + m) — allocates new list
+
+```python
+a = [1, 2]
+b = [3, 4]
+
+a.extend(b)    # a is now [1, 2, 3, 4], returns None
+c = a + b      # c is new list, a unchanged
+```
+
+**Use `extend()`** when building up a list. **Use `+`** when you need the original unchanged.
+
+---
+
+### List Shallow Copy vs Deep Copy
+**Front:**
+When do you need `copy.deepcopy()` instead of `list.copy()` for lists?
+
+**Back:**
+**Shallow copy** (`list.copy()`, `list[:]`, `list(original)`): Copies the list structure but **shares references** to nested objects.
+
+**Deep copy** (`copy.deepcopy()`): Recursively copies all nested objects.
+
+```python
+import copy
+
+original = [[1, 2], [3, 4]]
+
+shallow = original.copy()
+shallow[0][0] = 99
+print(original)  # [[99, 2], [3, 4]] — original changed!
+
+deep = copy.deepcopy(original)
+deep[0][0] = 0
+print(original)  # [[99, 2], [3, 4]] — original unchanged
+```
+
+**Rule:** Use `deepcopy()` when your list contains mutable objects (lists, dicts, sets, custom objects).
+
+---
+
+### List Membership Check is O(n)
+**Front:**
+What's the time complexity of `x in my_list`? What's the implication?
+
+**Back:**
+**O(n)** — Python must scan the list sequentially until it finds the element or reaches the end.
+
+```python
+my_list = [1, 2, 3, ..., 1000000]
+999999 in my_list  # Checks up to 999,999 elements
+```
+
+**Implication:** If you need frequent membership checks, convert to a set:
+
+```python
+my_set = set(my_list)  # O(n) one-time cost
+999999 in my_set       # O(1) per lookup
+```
+
+Lists are for ordered sequences. Sets are for fast membership testing.
+
+---
+
+### List insert() is O(n)
+**Front:**
+What is the time complexity of `list.insert(index, value)`? Why?
+
+**Back:**
+**O(n)**. Inserting at position `i` requires **shifting all elements from index `i` onward** one position to the right.
+
+```python
+nums = [1, 2, 3, 4, 5]
+nums.insert(0, 0)  # Worst case: shifts ALL elements
+# [0, 1, 2, 3, 4, 5]
+```
+
+- Insert at beginning: O(n) — shift everything
+- Insert at end: O(1) — same as append
+- Insert at middle: O(n) — shift half
+
+**Prefer `append()`** when possible. If you need efficient insertion at both ends, use `collections.deque`.
+
+---
+
+### List Comprehension Limitations
+**Front:**
+What control flow statements can you NOT use inside a list comprehension?
+
+**Back:**
+You cannot use `break` or `continue` inside list comprehensions.
+
+```python
+# This won't work:
+[x for x in range(10) if x == 5 break]  # SyntaxError
+
+# Use a regular loop instead:
+result = []
+for x in range(10):
+    if x == 5:
+        break
+    result.append(x)
+```
+
+List comprehensions are for **transformations and filtering**, not complex control flow. If you need `break`/`continue`, use a regular loop.
+
+---
+
+### List remove() — By Value, Not Index
+**Front:**
+How does `list.remove(value)` differ from `list.pop(index)`?
+
+**Back:**
+`remove(value)`: Deletes the **first occurrence** of a value
+- Raises `ValueError` if not found
+- O(n) — must search then shift
+
+`pop(index)`: Deletes by **position** and returns the removed element
+- Raises `IndexError` if out of bounds
+- O(n) for arbitrary index, O(1) for last element
+
+```python
+nums = [1, 2, 3, 2, 4]
+
+nums.remove(2)     # [1, 3, 2, 4] — removes first 2
+nums.pop(1)        # [1, 2, 4] — removes element at index 1
+```
+
+**Use `remove()`** when you know the value. **Use `pop()`** when you know the position.
+
+---
+
+### List index() vs in Operator
+**Front:**
+When should you use `list.index(value)` vs `value in list`?
+
+**Back:**
+`value in list`: Returns `True`/`False` — use when you only need **existence**
+
+`list.index(value)`: Returns the **position** — use when you need to know **where**
+
+```python
+names = ['Alice', 'Bob', 'Charlie']
+
+# Just checking existence
+if 'Bob' in names:
+    print("Found!")
+
+# Need the position
+pos = names.index('Bob')  # 1
+names[pos] = 'Robert'
+```
+
+**Caution:** `index()` raises `ValueError` if not found. Check with `in` first if unsure:
+
+```python
+if value in my_list:
+    pos = my_list.index(value)
+```
+
+---
+
