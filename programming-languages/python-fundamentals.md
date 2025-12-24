@@ -713,3 +713,75 @@ d.pop()          # [0, 1, 2], returns 3
 
 ---
 
+### Working with 2D Lists: Indexing and Dimensions
+**Front:**
+How do you access elements and get dimensions of a 2D list in Python? How do you get the number of rows and columns?
+
+**Back:**
+**Accessing elements:** Use double indexing `grid[row][col]`
+
+**Getting dimensions:**
+- Rows: `len(grid)`
+- Columns: `len(grid[0])` (assumes non-empty grid with uniform row lengths)
+
+```python
+grid = [
+    [1, 2, 3],
+    [4, 5, 6]
+]
+
+grid[0][2]       # 3 (row 0, column 2)
+grid[1][0]       # 4 (row 1, column 0)
+
+rows = len(grid)     # 2
+cols = len(grid[0])  # 3
+```
+
+---
+
+### The [[value] * n] * m Trap
+**Front:**
+Why does `[[0] * 3] * 2` cause unexpected behavior when modifying elements?
+
+**Back:**
+The `* 2` **replicates the reference** to the same inner list, not independent copies. Both rows point to the same list object in memory.
+
+```python
+grid = [[0] * 3] * 2
+print(grid)       # [[0, 0, 0], [0, 0, 0]]
+
+grid[0][0] = 1
+print(grid)       # [[1, 0, 0], [1, 0, 0]] — both rows changed!
+```
+
+**Why:** `[0] * 3` creates one list. `* 2` creates a list containing two references to that same list.
+
+This is one of the most common 2D list bugs in Python.
+
+---
+
+### Proper 2D Grid Initialization
+**Front:**
+How do you correctly initialize a 2D grid with a default value in Python?
+
+**Back:**
+Use **list comprehension** to create independent row lists:
+
+```python
+rows, cols = 2, 3
+
+# Correct — each row is a new list
+grid = [[0] * cols for _ in range(rows)]
+grid[0][0] = 1
+print(grid)  # [[1, 0, 0], [0, 0, 0]] — only first row changed
+
+# Also correct (more explicit)
+grid = [[0 for _ in range(cols)] for _ in range(rows)]
+```
+
+The outer comprehension runs `range(rows)` times, creating a **new** inner list each iteration.
+
+**Time Complexity:** O(n × m) to initialize an n × m grid.
+
+---
+
