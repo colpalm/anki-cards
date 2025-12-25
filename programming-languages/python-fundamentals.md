@@ -785,3 +785,229 @@ The outer comprehension runs `range(rows)` times, creating a **new** inner list 
 
 ---
 
+### Dict Deletion: del vs pop()
+**Front:**
+What's the difference between `del d[key]` and `d.pop(key)` for removing dictionary entries?
+
+**Back:**
+Both remove key-value pairs, but differ in return value and error handling:
+
+**`del d[key]`**
+- Removes the entry, returns nothing
+- Raises `KeyError` if key doesn't exist
+
+**`d.pop(key)`**
+- Removes and **returns the value**
+- Raises `KeyError` if key doesn't exist
+- Can provide default: `d.pop(key, default)` — returns default instead of error
+
+```python
+d = {'a': 1, 'b': 2}
+
+del d['a']              # d is now {'b': 2}
+del d['x']              # KeyError: 'x'
+
+value = d.pop('b')      # value = 2, d is now {}
+d.pop('x')              # KeyError: 'x'
+d.pop('x', 'missing')   # Returns 'missing', no error
+```
+
+**Tip:** For safe access without deletion, use `.get(key, default)`.
+
+---
+
+### defaultdict for Cleaner Code
+**Front:**
+What is `defaultdict` and when should you use it?
+
+**Back:**
+`defaultdict` is a dict subclass that automatically creates missing keys with a default value. Avoids `KeyError` on first access.
+
+```python
+from collections import defaultdict
+
+# With int — default is 0 (great for counting)
+freq = defaultdict(int)
+freq['a'] += 1          # No KeyError, 'a' starts at 0
+
+# With list — default is [] (great for grouping)
+groups = defaultdict(list)
+groups['team'].append('Alice')  # No need to check if key exists
+
+# With lambda — custom default value
+scores = defaultdict(lambda: 100)
+print(scores['new_player'])  # 100
+```
+
+**Common patterns:**
+- `defaultdict(int)` — counting/frequency
+- `defaultdict(list)` — grouping items
+- `defaultdict(set)` — unique grouping
+- `defaultdict(lambda: value)` — custom default
+
+---
+
+### Counter for Frequency Counting
+**Front:**
+What is `Counter` and how do you use it to count occurrences?
+
+**Back:**
+`Counter` is a dict subclass optimized for counting. Pass any iterable to count its elements.
+
+```python
+from collections import Counter
+
+nums = [1, 2, 2, 3, 3, 3]
+freq = Counter(nums)
+print(freq)  # Counter({3: 3, 2: 2, 1: 1})
+
+# Access counts (returns 0 for missing keys, no KeyError)
+freq[3]     # 3
+freq[100]   # 0
+
+# Increment counts
+freq[1] += 1  # freq[1] is now 2
+
+# Merge counts with update()
+more = [3, 4, 4]
+freq.update(more)
+print(freq)  # Counter({3: 4, 2: 2, 1: 2, 4: 2})
+```
+
+**When to use:**
+- `Counter` — simplest for counting (pass iterable directly)
+- `defaultdict(int)` — when you need more dict-like behavior
+- `dict.get()` — when you can't import collections or want to stick to default classes
+
+---
+
+### Dict and Set Comprehension
+**Front:**
+What is the syntax for dict and set comprehension in Python?
+
+**Back:**
+Similar to list comprehension, but with different brackets:
+
+**Dict comprehension** — use `{key: value for ...}`
+```python
+nums = [1, 2, 3]
+squared = {n: n * n for n in nums}
+# {1: 1, 2: 4, 3: 9}
+
+# With condition
+even_squared = {n: n * n for n in nums if n % 2 == 0}
+# {2: 4}
+```
+
+**Set comprehension** — use `{value for ...}` (no colon)
+```python
+nums = [1, 2, 2, 3, 3, 3]
+unique_doubled = {n * 2 for n in nums}
+# {2, 4, 6}
+```
+
+**Comparison:**
+- List: `[expr for ...]`
+- Set: `{expr for ...}`
+- Dict: `{key: value for ...}`
+- Note: no tuple comprehension - must be explicit: `tuple(x for x in range(5))`
+
+---
+
+### Iterating Over Dicts: keys(), values(), items()
+**Front:**
+What do `keys()`, `values()`, and `items()` return, and what are their time complexities?
+
+**Back:**
+They return **view objects** — live views into the dict, not copies. Views update automatically when the dict changes.
+
+```python
+d = {'a': 1, 'b': 2, 'c': 3}
+
+d.keys()    # dict_keys(['a', 'b', 'c'])
+d.values()  # dict_values([1, 2, 3])
+d.items()   # dict_items([('a', 1), ('b', 2), ('c', 3)])
+
+# Views are live — they reflect changes to the dict
+keys = d.keys()
+print(keys)     # dict_keys(['a', 'b', 'c'])
+d['d'] = 4
+print(keys)     # dict_keys(['a', 'b', 'c', 'd']) — updated!
+```
+
+**Time Complexity:**
+- Creating the view: **O(1)** (it's just a reference)
+- Iterating through: **O(n)**
+
+**Common pattern** — use `items()` to loop over key-value pairs:
+```python
+for key, value in d.items():
+    print(f"{key}: {value}")
+```
+
+Convert to list if needed: `list(d.keys())`
+
+---
+
+### Set Operations: add(), remove(), discard()
+**Front:**
+How do you add and remove elements from a set? What's the difference between the two removal methods?
+
+**Back:**
+**Adding elements:**
+```python
+s = set()
+s.add('a')      # {'a'}
+s.add('b')      # {'a', 'b'}
+```
+
+**Removing elements:**
+```python
+s = {'a', 'b', 'c'}
+
+s.remove('a')   # {'b', 'c'} — raises KeyError if not found
+s.discard('b')  # {'c'} — NO error if not found
+s.discard('x')  # {'c'} — silent, no error
+s.remove('x')   # KeyError: 'x'
+```
+
+**Key difference:**
+- `remove()` — raises `KeyError` if element missing
+- `discard()` — silently does nothing if element missing
+
+**Note:** `pop()` exists but removes an arbitrary element (not random, just unspecified order). Use when you need any element from the set.
+
+**Note:** Dicts don't have `.add()` — use `d[key] = value` for insertion.
+
+---
+
+### Tuple Keys in Dicts and Sets
+**Front:**
+Why can tuples be used as dict keys or set members, but lists cannot?
+
+**Back:**
+Dict keys and set members must be **hashable** (immutable). Tuples are immutable; lists are not.
+
+```python
+# Tuples work as keys
+grid = {}
+grid[(0, 0)] = 'start'
+grid[(1, 2)] = 'end'
+
+# Tuples work in sets
+visited = set()
+visited.add((0, 0))
+visited.add((1, 2))
+(0, 0) in visited  # True
+
+# Lists do NOT work
+grid[[0, 0]] = 'x'  # TypeError: unhashable type: 'list'
+visited.add([0, 0]) # TypeError: unhashable type: 'list'
+```
+
+**Common pattern:** Use `(row, col)` tuples to track grid positions in BFS/DFS.
+
+**Why?** If a list could be a key and you modified it after insertion, the hash would change and the dict/set couldn't find it anymore.
+
+---
+
