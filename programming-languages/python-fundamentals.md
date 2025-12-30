@@ -43,7 +43,7 @@ Use parentheses to make intent clear.
 
 ### Falsy Values
 **Front:**
-List all the falsy values in Python.
+List all the falsy values in Python (9 listed).
 
 **Back:**
 - `False`
@@ -98,9 +98,8 @@ s[::-1]
 ```
 
 Slicing syntax: `s[start:end:step]`
-- Omitted `start`: beginning of string
-- Omitted `end`: end of string
 - `step = -1`: traverse backward
+- When step is negative, Python switches the defaults: omitted `start` becomes end of string, omitted `end` becomes before the beginning
 
 ```python
 "hello"[::-1]  # "olleh"
@@ -1008,6 +1007,209 @@ visited.add([0, 0]) # TypeError: unhashable type: 'list'
 **Common pattern:** Use `(row, col)` tuples to track grid positions in BFS/DFS.
 
 **Why?** If a list could be a key and you modified it after insertion, the hash would change and the dict/set couldn't find it anymore.
+
+---
+
+### What is a Heap / Priority Queue
+**Front:**
+What is a heap (priority queue)? When do heaps shine compared to sorting?
+
+**Back:**
+A **heap** is a data structure that efficiently maintains the minimum (or maximum) element for quick access.
+
+- Python's `heapq` implements a **min heap** — smallest element always at top
+- Implemented as a list under the hood
+
+**Heap property:**
+- **Min heap:** every parent ≤ its children
+- **Max heap:** every parent ≥ its children
+
+Unlike a BST, there's no left/right ordering — both children just need to satisfy the parent relationship.
+
+**When heaps shine:**
+- **Partial sorting** — need only the k smallest/largest elements
+- **Stream processing** — data arrives continuously, need running min/max
+- **Priority queues** — process items by priority, not arrival order
+
+**When NOT to use:**
+- Full sorting — just use `sorted()` which is already O(n log n) (same as popping every element off a heap)
+- Need random access by index
+
+---
+
+### Python Heap Basics (push, peek)
+**Front:**
+How do you create a heap, add elements, and access the minimum in Python? What are the time complexities?
+
+**Back:**
+```python
+import heapq
+
+heap = []                    # Create empty heap (just a list)
+heapq.heappush(heap, 3)      # Push element
+heapq.heappush(heap, 1)
+heapq.heappush(heap, 2)
+
+top = heap[0]                # Peek at minimum (1)
+```
+
+**Time Complexity:**
+- `heappush()`: **O(log n)** — appends to end, then sifts up (swaps with parent until heap property restored)
+- `heap[0]` (peek): **O(1)**
+
+**Space Complexity:** O(n) for n elements
+
+**Note:** There's no `.top()` method — just index with `[0]`.
+
+---
+
+### Heap Pop
+**Front:**
+How do you remove and return the minimum element from a heap? What happens if the heap is empty?
+
+**Back:**
+```python
+import heapq
+
+heap = [1, 2, 3]  # Assume valid heap
+heapq.heapify(heap)
+
+smallest = heapq.heappop(heap)  # Returns 1, heap is now [2, 3]
+```
+
+**Time Complexity:** O(log n) — must restore heap property after removal
+
+**Space Complexity:** O(1)
+
+**Empty heap:** Raises `IndexError` if you pop from an empty heap.
+
+```python
+empty = []
+heapq.heappop(empty)  # IndexError: index out of range
+```
+
+---
+
+### Heapify
+**Front:**
+How do you convert an existing list into a heap? Why is this more efficient than pushing elements one by one?
+
+**Back:**
+```python
+import heapq
+
+nums = [4, 2, 5, 3, 1]
+heapq.heapify(nums)      # Converts in-place to valid heap
+
+while nums:
+    print(heapq.heappop(nums))  # 1, 2, 3, 4, 5
+```
+
+**Time Complexity:**
+- `heapify()`: **O(n)**
+- Pushing n elements one by one: **O(n log n)**
+
+`heapify()` is faster because it builds the heap bottom-up, doing less work for elements near the bottom (which are most elements).
+
+**Note:** Modifies the list in-place, returns `None`.
+
+---
+
+### Max Heap in Python
+**Front:**
+Python only provides a min heap. How do you implement a max heap?
+
+**Back:**
+**Negate values** when pushing and negate back when popping:
+
+```python
+import heapq
+
+nums = [4, 2, 3, 5]
+
+# Method 1: Push one by one
+max_heap = []
+for num in nums:
+    heapq.heappush(max_heap, -num)
+
+# Method 2: Heapify (more efficient)
+max_heap = [-num for num in nums]
+heapq.heapify(max_heap)
+
+# Pop largest
+largest = -heapq.heappop(max_heap)  # 5
+next_largest = -heapq.heappop(max_heap)  # 4
+```
+
+**Key:** Negate going in, negate coming out.
+
+---
+
+### Custom Heap Priorities with Tuples
+**Front:**
+How do you create a heap with custom priorities in Python (e.g., sort by absolute value)?
+
+**Back:**
+Use **tuples** where the first element is the priority:
+
+```python
+import heapq
+
+nums = [4, -2, 3, -5]
+heap = []
+
+for num in nums:
+    heapq.heappush(heap, (abs(num), num))  # (priority, value)
+
+while heap:
+    priority, original = heapq.heappop(heap)
+    print(original)  # -2, 3, 4, -5
+```
+
+**How it works:**
+- Python compares tuples element-by-element
+- First element (priority) determines heap order
+- If priorities tie, compares second element, then third, etc.
+
+**Common pattern:** `(priority, tiebreaker, value)` when you need to handle ties explicitly.
+
+---
+
+### nsmallest and nlargest
+**Front:**
+How do you efficiently find the k smallest or largest elements from a collection?
+
+**Back:**
+```python
+import heapq
+
+nums = [1, 6, 3, 5, 7, 9, 8, 10, 2, 12]
+
+heapq.nsmallest(3, nums)  # [1, 2, 3] — sorted ascending
+heapq.nlargest(3, nums)   # [12, 10, 9] — sorted descending
+```
+
+**Time Complexity** (m = input size, k = elements requested):
+
+Python adapts based on k vs m:
+- **k small relative to m:** O(m log k) — uses a heap of size k (most common case)
+- **k close to m:** O(m log m) — switches to sorting internally
+- **k = 1:** O(m) — effectively just `min()`/`max()`
+
+**Counterintuitive implementation:**
+- `nlargest` uses a **min heap** — the min lets you kick out the smallest of your "large" elements when a bigger one arrives
+- `nsmallest` uses a **max heap** — the max lets you kick out the largest of your "small" elements when a smaller one arrives
+
+**When to use what:**
+- `nsmallest(k, data)` / `nlargest(k, data)` — when k is small relative to m (the typical use case)
+- `sorted(data)[:k]` — when k is close to m
+- `min(data)` / `max(data)` — when k = 1
+
+**With key function:**
+```python
+words = ["banana", "pie", "apple"]
+heapq.nsmallest(2, words, key=len)  # ['pie', 'apple']
+```
 
 ---
 
