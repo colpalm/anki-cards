@@ -1213,3 +1213,144 @@ heapq.nsmallest(2, words, key=len)  # ['pie', 'apple']
 
 ---
 
+### When to Use Sorted Containers
+**Front:**
+When should you use `SortedDict` or `SortedSet` from the `sortedcontainers` library instead of regular dict/set?
+
+**Back:**
+Python has no built-in sorted containers. Use `sortedcontainers` when you need:
+
+- **Iterate in sorted order** — keys/elements always maintained in order
+- **Access min/max efficiently** — get first/last without full scan
+- **Range queries** — slice or iterate over a range of keys
+
+**Trade-off:** O(log n) for all operations vs O(1) for regular dict/set.
+
+```python
+from sortedcontainers import SortedDict, SortedSet
+```
+
+**Use regular dict/set when:**
+- You only need sorted output occasionally (just call `sorted()` - returns a list of keys)
+- You need O(1) lookups and don't care about order
+
+---
+
+### SortedDict Basics
+**Front:**
+How do you create and use a `SortedDict`? Show insertion, access, deletion, and lookup.
+
+**Back:**
+```python
+from sortedcontainers import SortedDict
+
+sd = SortedDict()
+
+# Insertion — O(log n)
+sd['C'] = 90
+sd['B'] = 80
+sd['A'] = 70
+print(sd)  # SortedDict({'A': 70, 'B': 80, 'C': 90})
+
+# Access — O(log n)
+print(sd['A'])  # 70
+
+# Lookup — O(log n)
+'B' in sd  # True
+
+# Deletion — O(log n)
+del sd['C']
+sd.pop('B')  # Returns 80
+```
+
+Same interface as regular dict, but keys are always sorted. No duplicate keys allowed.
+
+**All operations are O(log n)** (vs O(1) for regular dict).
+
+---
+
+### SortedDict popitem() with Index
+**Front:**
+How does `popitem()` work differently on a `SortedDict` compared to a regular dict?
+
+**Back:**
+`SortedDict.popitem()` accepts an optional index to remove by position in sorted order:
+
+```python
+from sortedcontainers import SortedDict
+
+sd = SortedDict({'a': 1, 'b': 2, 'c': 3, 'd': 4})
+
+sd.popitem()   # ('d', 4) — removes LAST (largest key)
+sd.popitem(0)  # ('a', 1) — removes FIRST (smallest key)
+```
+
+**Contrast with regular dict:**
+- Regular `dict.popitem()` removes in LIFO order (last inserted)
+- `SortedDict.popitem()` removes by sorted position
+
+**Time Complexity:** O(log n)
+
+Raises `KeyError` if dict is empty.
+
+---
+
+### SortedSet Basics
+**Front:**
+How do you create and use a `SortedSet`? Show add, remove, discard, lookup, and clear.
+
+**Back:**
+```python
+from sortedcontainers import SortedSet
+
+ss = SortedSet()
+
+# Add — O(log n)
+ss.add(90)
+ss.add(80)
+ss.add(85)
+print(ss)  # SortedSet([80, 85, 90])
+
+# Lookup — O(log n)
+80 in ss  # True
+
+# Remove — O(log n)
+ss.remove(90)   # Raises KeyError if not found
+ss.discard(100) # No error if not found
+
+# Clear — O(n)
+ss.clear()
+```
+
+Elements always in ascending order. No duplicates allowed.
+
+`remove()` vs `discard()` behavior is the same as regular sets.
+
+---
+
+### SortedSet pop() Behavior
+**Front:**
+How does `pop()` work on a `SortedSet`? How do you get the smallest vs largest element?
+
+**Back:**
+```python
+from sortedcontainers import SortedSet
+
+ss = SortedSet([80, 85, 90, 95])
+
+ss.pop()   # 95 — removes and returns LARGEST (last index)
+ss.pop(0)  # 80 — removes and returns SMALLEST (first index)
+```
+
+**Contrast with regular set:**
+- Regular `set.pop()` removes an arbitrary element
+- `SortedSet.pop()` removes by position in sorted order
+
+**Time Complexity:** O(log n)
+
+Raises `KeyError` if set is empty.
+
+**Use case:** Efficiently track and remove min/max values.
+
+---
+
