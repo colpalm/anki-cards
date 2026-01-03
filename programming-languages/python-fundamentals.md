@@ -493,7 +493,7 @@ print(original)  # [[99, 2], [3, 4]] — original unchanged
 
 ### List Membership Check is O(n)
 **Front:**
-What's the time complexity of `x in my_list`? What's the implication?
+What's the time complexity of `x in my_list`? What's the implication (or alternative)?
 
 **Back:**
 **O(n)** — Python must scan the list sequentially until it finds the element or reaches the end.
@@ -560,7 +560,7 @@ List comprehensions are for **transformations and filtering**, not complex contr
 
 ### List remove() — By Value, Not Index
 **Front:**
-How does `list.remove(value)` differ from `list.pop(index)`?
+How does `list.remove(...)` differ from `list.pop(...)`?
 
 **Back:**
 `remove(value)`: Deletes the **first occurrence** of a value
