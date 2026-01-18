@@ -761,7 +761,7 @@ This is one of the most common 2D list bugs in Python.
 
 ### Proper 2D Grid Initialization
 **Front:**
-How do you correctly initialize a 2D grid with a default value in Python?
+How do you correctly initialize a 2D grid with a default value in Python? What is the time complexity?
 
 **Back:**
 Use **list comprehension** to create independent row lists:
@@ -817,7 +817,8 @@ d.pop('x', 'missing')   # Returns 'missing', no error
 
 ### defaultdict for Cleaner Code
 **Front:**
-What is `defaultdict` and when should you use it?
+What is `defaultdict` and what does it avoid?
+- Can you provide a custom value?
 
 **Back:**
 `defaultdict` is a dict subclass that automatically creates missing keys with a default value. Avoids `KeyError` on first access.
@@ -849,6 +850,8 @@ print(scores['new_player'])  # 100
 ### Counter for Frequency Counting
 **Front:**
 What is `Counter` and how do you use it to count occurrences?
+- What if you try to access a missing key?
+- What is one useful method?
 
 **Back:**
 `Counter` is a dict subclass optimized for counting. Pass any iterable to count its elements.
@@ -911,6 +914,15 @@ unique_doubled = {n * 2 for n in nums}
 - Dict: `{key: value for ...}`
 - Note: no tuple comprehension - must be explicit: `tuple(x for x in range(5))`
 
+**if/else placement:**
+```python
+# Filter only — if comes AFTER for
+[x for x in nums if x > 0]        # [1, 2, 3]
+
+# Conditional expression — if/else comes BEFORE for
+[x if x > 0 else 0 for x in nums] # [0, 0, 1, 2, 3]
+```
+
 ---
 
 ### Iterating Over Dicts: keys(), values(), items()
@@ -918,7 +930,7 @@ unique_doubled = {n * 2 for n in nums}
 What do `keys()`, `values()`, and `items()` return, and what are their time complexities?
 
 **Back:**
-They return **view objects** — live views into the dict, not copies. Views update automatically when the dict changes.
+They return reusable **view objects** (iterables)— live views into the dict, not copies. Views update automatically when the dict changes.
 
 ```python
 d = {'a': 1, 'b': 2, 'c': 3}
@@ -943,6 +955,8 @@ print(keys)     # dict_keys(['a', 'b', 'c', 'd']) — updated!
 for key, value in d.items():
     print(f"{key}: {value}")
 ```
+
+**Note:** Since Python 3.7, dicts maintain insertion order, so these views iterate in the order keys were inserted.
 
 Convert to list if needed: `list(d.keys())`
 
