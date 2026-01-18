@@ -213,3 +213,131 @@ class SuperHero:
         return self.health > 0
 ```
 
+---
+
+### What is encapsulation?
+
+**Front:**
+What is encapsulation in object-oriented programming?
+
+**Back:**
+Encapsulation is bundling data and methods that operate on that data within a class, while restricting direct access to some components.
+
+The goal is to hide internal implementation details and expose only what's necessary.
+
+```python
+class BankAccount:
+    def __init__(self, balance):
+        self._balance = balance  # internal state hidden
+
+    def deposit(self, amount):
+        if amount > 0:
+            self._balance += amount
+
+    def get_balance(self):
+        return self._balance
+```
+
+External code interacts through methods rather than directly manipulating internal state—allowing validation, logging, or implementation changes without affecting callers.
+
+Think about a car - don't need to know the internals of the car, just how to use/drive it.
+
+---
+
+### Python's access control conventions
+
+**Front:**
+How does Python indicate public, protected, and private attributes? Is access actually enforced?
+
+**Back:**
+Python uses naming conventions, not enforcement:
+
+- `name` — Public, accessible everywhere
+- `_name` — Protected, signals "internal use"
+- `__name` — Private, triggers name mangling
+
+```python
+class Example:
+    def __init__(self):
+        self.public = 1       # no restriction
+        self._protected = 2   # convention: don't access externally
+        self.__private = 3    # mangled to _Example__private
+
+obj = Example()
+obj._protected    # works (but discouraged)
+obj._Example__private  # works (mangling is not security)
+```
+
+**In practice:** Single underscore `_` is the standard convention. Double underscore `__` is rarely used—it exists mainly to avoid name collisions in inheritance, not for "true" privacy.
+
+---
+
+### The @property decorator
+
+**Front:**
+How do you use the `@property` decorator to create a getter and setter in Python?
+
+**Back:**
+`@property` creates a getter; `@<name>.setter` creates a setter. Both use the same method name.
+
+```python
+class Circle:
+    def __init__(self, radius):
+        self._radius = radius
+
+    @property
+    def radius(self):
+        return self._radius
+
+    @radius.setter
+    def radius(self, value):
+        if value < 0:
+            raise ValueError("Radius cannot be negative")
+        self._radius = value
+
+c = Circle(5)
+print(c.radius)  # calls getter → 5
+c.radius = 10    # calls setter
+```
+
+This is the Pythonic alternative to Java-style `get_radius()` / `set_radius()` methods—cleaner syntax while still allowing validation.
+
+---
+
+### When to use @property vs public attributes
+
+**Front:**
+When should you use `@property` versus a plain public attribute in Python?
+
+**Back:**
+**Start with public attributes.** Add `@property` only when you need:
+
+1. **Validation** - enforce constraints on assignment
+2. **Computed values** - derive from other attributes
+3. **Side effects** - logging, caching, lazy loading
+4. **Backward compatibility** - replace an attribute without breaking callers
+
+```python
+# Start simple
+class User:
+    def __init__(self, email):
+        self.email = email  # public is fine
+
+# Add @property later if needed
+class User:
+    def __init__(self, email):
+        self._email = email
+
+    @property
+    def email(self):
+        return self._email
+
+    @email.setter
+    def email(self, value):
+        if "@" not in value:
+            raise ValueError("Invalid email")
+        self._email = value
+```
+
+Unlike Java, you don't need getters/setters "just in case"—you can add them later without changing the public interface.
+
