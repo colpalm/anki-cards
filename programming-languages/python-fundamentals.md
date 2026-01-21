@@ -1022,6 +1022,11 @@ visited.add([0, 0]) # TypeError: unhashable type: 'list'
 
 **Why?** If a list could be a key and you modified it after insertion, the hash would change and the dict/set couldn't find it anymore.
 
+**Note:** A tuple containing mutable elements is also unhashable:
+```python
+hash((1, 2, [3, 4]))  # TypeError: unhashable type: 'list'
+```
+
 ---
 
 ### What is a Heap / Priority Queue
