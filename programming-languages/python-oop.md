@@ -341,3 +341,562 @@ class User:
 
 Unlike Java, you don't need getters/setters "just in case"—you can add them later without changing the public interface.
 
+---
+
+### What is a class method?
+
+**Front:**
+What is a class method in Python, and when would you use one?
+
+**Back:**
+A **class method** operates on the class itself rather than on instances. It receives the class as its first argument (`cls`) instead of an instance (`self`).
+
+**Common use cases:**
+- Factory methods / alternative constructors
+- Tracking class-level state (e.g., counting instances)
+- Methods that need to work with the class, not a specific instance
+
+```python
+class SuperHero:
+    hero_count = 0
+
+    def __init__(self, name):
+        self.name = name
+        SuperHero.hero_count += 1
+
+    @classmethod
+    def from_alias(cls, alias, real_name):
+        """Factory method - alternative constructor"""
+        return cls(f"{alias} ({real_name})")
+
+hero = SuperHero.from_alias("Spider-Man", "Peter Parker")
+print(hero.name)  # Spider-Man (Peter Parker)
+```
+
+---
+
+### How to define a class method
+
+**Front:**
+How do you define and call a class method in Python?
+
+**Back:**
+Use the `@classmethod` decorator and accept `cls` as the first parameter.
+
+```python
+class SuperHero:
+    base_power = 100
+
+    @classmethod
+    def get_base_power(cls):
+        return cls.base_power
+
+    @classmethod
+    def set_base_power(cls, power):
+        cls.base_power = power
+
+# Call via the class (preferred)
+print(SuperHero.get_base_power())  # 100
+
+# Also works via an instance
+hero = SuperHero()
+print(hero.get_base_power())  # 100
+```
+
+`cls` is a convention (like `self`), not a keyword—but always use `cls` to be idiomatic.
+
+---
+
+### Why use `cls` instead of the class name?
+
+**Front:**
+In a class method, why should you use `cls` instead of the class name directly?
+
+**Back:**
+Using `cls` respects inheritance—it refers to the actual calling class, which may be a subclass. Hardcoding the class name breaks polymorphism.
+
+```python
+class Animal:
+    count = 0
+
+    @classmethod
+    def create(cls):
+        cls.count += 1
+        return cls()
+
+class Dog(Animal):
+    pass
+
+dog = Dog.create()  # cls is Dog, not Animal
+print(Dog.count)     # 1
+print(Animal.count)  # 0 (separate counter)
+```
+
+If we used `Animal.count` instead of `cls.count`, all subclasses would share the same counter—which is rarely what you want.
+
+**Rule of thumb:** Always use `cls` in class methods unless you explicitly need to reference a specific class.
+
+---
+
+### What is a static method?
+
+**Front:**
+What is a static method in Python, and when would you use one?
+
+**Back:**
+A **static method** belongs to a class but doesn't access the class (`cls`) or instance (`self`). It's essentially a regular function namespaced to the class.
+
+**Use cases:**
+- Utility functions logically related to the class
+- Helper methods that don't need class or instance state
+- Grouping related functionality under a class namespace
+
+```python
+class MathUtils:
+    @staticmethod
+    def is_even(n):
+        return n % 2 == 0
+
+    @staticmethod
+    def clamp(value, min_val, max_val):
+        return max(min_val, min(value, max_val))
+
+print(MathUtils.is_even(4))       # True
+print(MathUtils.clamp(15, 0, 10)) # 10
+```
+
+If the method doesn't use `self` or `cls`, it's a candidate for `@staticmethod`.
+
+---
+
+### How to define a static method
+
+**Front:**
+How do you define a static method in Python?
+
+**Back:**
+Use the `@staticmethod` decorator. The method takes no implicit first argument—no `self` or `cls`.
+
+```python
+class SuperHero:
+    @staticmethod
+    def validate_name(name):
+        return len(name) > 0 and name[0].isupper()
+
+# Call via the class
+print(SuperHero.validate_name("Spider-Man"))  # True
+
+# Also works via an instance
+hero = SuperHero()
+print(hero.validate_name("spider-man"))  # False
+```
+
+**Note:** A static method can still access class attributes, class methods or static methods, but only via the class name directly (`ClassName.attr`).
+
+---
+
+### Class method vs static method
+
+**Front:**
+When should you use a class method vs a static method?
+
+**Back:**
+**Use `@classmethod` when you need:**
+- Access to the class (`cls`) or class attributes
+- Factory methods / alternative constructors
+- Inheritance-aware behavior (subclasses get their own `cls`)
+
+**Use `@staticmethod` when you need:**
+- A utility function that belongs logically to the class
+- No access to class or instance state
+- A function that could be standalone but is related to the class
+
+```python
+class Date:
+    def __init__(self, year, month, day):
+        self.year, self.month, self.day = year, month, day
+
+    @classmethod
+    def from_string(cls, date_str):
+        """Factory method - needs cls to create instance"""
+        y, m, d = map(int, date_str.split("-"))
+        return cls(y, m, d)
+
+    @staticmethod
+    def is_valid_date(date_str):
+        """Pure validation - doesn't need class or instance"""
+        parts = date_str.split("-")
+        return len(parts) == 3 and all(p.isdigit() for p in parts)
+
+print(Date.is_valid_date("2024-01-15"))  # True
+d = Date.from_string("2024-01-15")
+```
+
+**Simple rule:** If you need `cls`, use `@classmethod`. If you don't need `cls` or `self`, use `@staticmethod`.
+
+---
+
+### What is inheritance?
+
+**Front:**
+What is inheritance in Python? What happens to the parent's `__init__` when you create a child class?
+
+**Back:**
+**Inheritance** allows a child class (subclass) to reuse attributes and methods from a parent class (superclass).
+
+```python
+class SuperHero:
+    def __init__(self, name, power):
+        self.name = name
+        self.power = power
+
+class Avenger(SuperHero):
+    def assemble(self):
+        print(f"{self.name} assembles!")
+
+# Avenger inherits __init__, name, and power from SuperHero
+iron_man = Avenger("Iron Man", "repulsor beams")
+print(iron_man.name)   # Iron Man
+iron_man.assemble()    # Iron Man assembles!
+```
+
+**Parent `__init__` behavior:**
+- If child has no `__init__`, parent's `__init__` is called automatically
+- If child defines `__init__`, you must explicitly call `super().__init__()` to run the parent's initialization
+
+---
+
+### Method overriding
+
+**Front:**
+What is method overriding in Python? When would you use it?
+
+**Back:**
+**Method overriding** is when a child class defines a method with the same name as one in the parent class, replacing the parent's behavior.
+
+```python
+class SuperHero:
+    def fight(self):
+        print("Fighting with basic moves!")
+
+class Avenger(SuperHero):
+    def fight(self):  # Overrides parent method
+        print("Fighting with advanced weapons!")
+
+hero = Avenger()
+hero.fight()  # Fighting with advanced weapons!
+```
+
+**When to use:**
+- When the parent's implementation doesn't fit the child's needs
+- When you want to specialize behavior for the subclass
+
+To extend (rather than replace) the parent's behavior, use `super().method_name()` inside the override.
+
+---
+
+### The super() function
+
+**Front:**
+What does `super()` do in Python? How do you use it with `__init__`?
+
+**Back:**
+`super()` returns a proxy object that lets you call methods from the parent class. Most commonly used to call the parent's `__init__`.
+
+```python
+class SuperHero:
+    def __init__(self, name, power):
+        self.name = name
+        self.power = power
+
+class Avenger(SuperHero):
+    def __init__(self, name, power, team):
+        super().__init__(name, power)  # Call parent's __init__
+        self.team = team               # Add child-specific attribute
+
+avenger = Avenger("Iron Man", "repulsor beams", "Avengers")
+print(avenger.name)  # Iron Man (from parent)
+print(avenger.team)  # Avengers (from child)
+```
+
+**Key points:**
+- You must pass the arguments the parent's `__init__` expects
+- Also works for calling other parent methods: `super().method_name()`
+- Using `super()` (vs hardcoding the parent class name) properly supports multiple inheritance
+
+---
+
+### Multiple inheritance
+
+**Front:**
+What is multiple inheritance in Python? Why is it generally discouraged?
+
+**Back:**
+**Multiple inheritance** allows a class to inherit from more than one parent class.
+
+```python
+class Swimmer:
+    def swim(self):
+        print("Swimming")
+
+class Flyer:
+    def fly(self):
+        print("Flying")
+
+class Duck(Swimmer, Flyer):
+    pass
+
+duck = Duck()
+duck.swim()  # Swimming
+duck.fly()   # Flying
+```
+
+**Why it's discouraged:**
+- Creates complex class hierarchies that are hard to understand
+- Can lead to the **diamond problem** (ambiguous method resolution)
+- Makes code harder to maintain and debug
+
+**When it might be acceptable:**
+- Mixin classes (small, focused classes that add specific behavior)
+- When composition isn't a good fit
+
+In most cases, prefer **composition over inheritance**.
+
+---
+
+### Composition vs inheritance (is-a vs has-a)
+
+**Front:**
+What's the difference between composition and inheritance? When should you prefer one over the other?
+
+**Back:**
+**Inheritance (is-a):** Child class *is a* type of parent. Uses `class Child(Parent)`.
+
+**Composition (has-a):** Class *has* another object as an attribute. Uses instance variables.
+
+```python
+# Inheritance: Car IS A Vehicle
+class Car(Vehicle):
+    pass
+
+# Composition: Car HAS AN Engine
+class Car:
+    def __init__(self):
+        self.engine = Engine()
+```
+
+**Prefer composition when:**
+- You need flexibility to swap components at runtime
+- The relationship is "uses" rather than "is a type of"
+- You want to avoid tight coupling to a parent class
+
+**Prefer inheritance when:**
+- There's a true "is-a" relationship
+- You need to work with existing polymorphic code
+- You're extending a framework that expects subclassing
+
+**Rule of thumb:** Default to composition. Use inheritance when there's a clear hierarchical relationship and you need polymorphism.
+
+---
+
+### Diamond problem and MRO
+
+**Front:**
+What is the diamond problem in multiple inheritance? How does Python resolve it?
+
+**Back:**
+The **diamond problem** occurs when a class inherits from two classes that share a common ancestor, creating ambiguity about which method to call.
+
+```python
+class A:
+    def greet(self):
+        print("A")
+
+class B(A):
+    def greet(self):
+        print("B")
+
+class C(A):
+    def greet(self):
+        print("C")
+
+class D(B, C):
+    pass
+
+#    A
+#   / \
+#  B   C
+#   \ /
+#    D
+
+d = D()
+d.greet()  # B — but why?
+```
+
+**Method Resolution Order (MRO):** Python uses a deterministic order to find methods:
+1. Current class (`D`)
+2. First parent (`B`)
+3. Second parent (`C`)
+4. Common ancestor (`A`)
+5. `object`
+
+```python
+print(D.__mro__)
+# (<class 'D'>, <class 'B'>, <class 'C'>, <class 'A'>, <class 'object'>)
+```
+
+The order of parents in the class definition matters: `class D(B, C)` checks `B` before `C`.
+
+---
+
+### Polymorphism
+
+**Front:**
+What is polymorphism? What's the difference between runtime and compile-time polymorphism in Python?
+
+**Back:**
+**Polymorphism** means objects of different types can be used through the same interface—the correct behavior is determined by the actual object type.
+
+```python
+class Dog:
+    def speak(self):
+        return "Woof!"
+
+class Cat:
+    def speak(self):
+        return "Meow!"
+
+def animal_sound(animal):
+    print(animal.speak())  # Same interface, different behavior
+
+animal_sound(Dog())  # Woof!
+animal_sound(Cat())  # Meow!
+```
+
+**Runtime polymorphism (dynamic):**
+- Determined during execution
+- Achieved through method overriding and duck typing
+- Most common in Python
+
+**Compile-time polymorphism (static):**
+- Determined before code runs
+- In other languages: method overloading (same name, different parameters)
+- Python doesn't truly support this—uses default args or `*args` instead
+
+---
+
+### Method overloading in Python
+
+**Front:**
+Does Python support method overloading? How do you achieve similar behavior?
+
+**Back:**
+**Python does not support traditional method overloading.** If you define multiple methods with the same name, only the last one exists—earlier definitions are overwritten.
+
+**Workarounds:**
+
+1. **Default arguments:**
+```python
+def add(a, b, c=0):
+    return a + b + c
+
+add(1, 2)      # 3
+add(1, 2, 3)   # 6
+```
+
+2. **Variable-length arguments:**
+```python
+def add(*args):
+    return sum(args)
+
+add(1, 2)         # 3
+add(1, 2, 3, 4)   # 10
+```
+
+3. **Multiple dispatch (third-party):**
+```python
+from multipledispatch import dispatch
+
+@dispatch(int, int)
+def add(x, y):
+    return x + y
+
+@dispatch(str, str)
+def add(x, y):
+    return x + y  # concatenation
+
+add(1, 2)      # 3
+add("a", "b")  # "ab"
+```
+
+The first two approaches are idiomatic Python; `multipledispatch` is useful for type-based dispatch in larger applications.
+
+---
+
+### Duck typing
+
+**Front:**
+What is duck typing in Python? Why is it considered idiomatic?
+
+**Back:**
+**Duck typing:** "If it walks like a duck and quacks like a duck, it's a duck." An object's suitability is determined by its methods/attributes, not its class.
+
+```python
+class Dog:
+    def speak(self):
+        return "Woof!"
+
+class Robot:
+    def speak(self):
+        return "Beep boop!"
+
+def make_speak(thing):
+    print(thing.speak())  # Don't care about type, just need speak()
+
+make_speak(Dog())    # Woof!
+make_speak(Robot())  # Beep boop!
+```
+
+**Why it's idiomatic in Python:**
+- Python is dynamically typed—no compile-time type checking
+- Enables flexibility without inheritance hierarchies
+- Promotes loose coupling (classes don't need to know about each other)
+
+**Trade-off:** No compile-time safety. If an object lacks the required method, you get a runtime `AttributeError`. Use `try/except` or `hasattr()` if needed.
+
+---
+
+### isinstance() and issubclass()
+
+**Front:**
+What do `isinstance()` and `issubclass()` do? When would you use them?
+
+**Back:**
+**`isinstance(obj, class)`** — checks if an object is an instance of a class (or its subclasses).
+
+**`issubclass(child, parent)`** — checks if a class is a subclass of another.
+
+```python
+class Animal:
+    pass
+
+class Dog(Animal):
+    pass
+
+dog = Dog()
+
+isinstance(dog, Dog)       # True
+isinstance(dog, Animal)    # True (inheritance counts)
+isinstance(dog, str)       # False
+
+issubclass(Dog, Animal)    # True
+issubclass(Dog, Dog)       # True (class is subclass of itself)
+issubclass(Animal, Dog)    # False
+```
+
+**When to use:**
+- Input validation: `if not isinstance(x, int): raise TypeError(...)`
+- When you genuinely need type-specific behavior
+
+**Note:** In idiomatic Python, duck typing and `try/except` are often preferred over explicit type checks. Use these when type actually matters (e.g., API boundaries, serialization).
+
