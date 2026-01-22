@@ -900,3 +900,213 @@ issubclass(Animal, Dog)    # False
 
 **Note:** In idiomatic Python, duck typing and `try/except` are often preferred over explicit type checks. Use these when type actually matters (e.g., API boundaries, serialization).
 
+---
+
+### What is abstraction?
+
+**Front:**
+What is abstraction in object-oriented programming?
+
+**Back:**
+**Abstraction** is hiding complex implementation details and exposing only the necessary features to the outside world.
+
+```python
+class TemperatureConverter:
+    def __init__(self, celsius):
+        self._celsius = celsius  # Hidden internal state
+
+    def get_fahrenheit(self) -> float:
+        return (self._celsius * 9/5) + 32
+
+temp = TemperatureConverter(25)
+print(temp.get_fahrenheit())  # 77.0
+# User doesn't need to know the conversion formula
+```
+
+Think of a TV remote—you press buttons to change channels without understanding the electronics inside.
+
+---
+
+### Abstraction vs encapsulation
+
+**Front:**
+What's the difference between abstraction and encapsulation?
+
+**Back:**
+**Abstraction** operates at the design level—deciding *what* features to expose and hiding unnecessary complexity.
+
+**Encapsulation** operates at the implementation level—*how* to organize code by bundling data with the methods that operate on it, and restricting direct access.
+
+```python
+class BankAccount:
+    def __init__(self, balance):
+        self._balance = balance
+
+    def withdraw(self, amount):
+        if amount <= self._balance:
+            self._balance -= amount
+            return amount
+        raise ValueError("Insufficient funds")
+```
+
+- **Encapsulation:** `_balance` and `withdraw()` are bundled together; `_balance` is protected from direct access
+- **Abstraction:** User calls `withdraw()` without knowing how balance validation works
+
+**Memory aid:** Abstraction = what to show. Encapsulation = how to bundle and protect.
+
+---
+
+### Abstract classes and methods in Python
+
+**Front:**
+How do you create an abstract class and abstract method in Python?
+
+**Back:**
+Inherit from `ABC` and use the `@abstractmethod` decorator.
+
+```python
+from abc import ABC, abstractmethod
+
+class Shape(ABC):
+    def __init__(self, color):
+        self.color = color  # Concrete attribute
+
+    @abstractmethod
+    def area(self) -> float:
+        pass  # No implementation
+
+    def describe(self):  # Concrete method
+        return f"A {self.color} shape"
+
+class Circle(Shape):
+    def __init__(self, color, radius):
+        super().__init__(color)
+        self.radius = radius
+
+    def area(self) -> float:  # Must implement
+        return 3.14159 * self.radius ** 2
+```
+
+**Key behaviors:**
+- Cannot instantiate abstract classes: `Shape("red")` raises `TypeError`
+- Subclasses must implement all abstract methods or they're also abstract
+- Abstract classes can have concrete methods and `__init__`
+
+---
+
+### When to use an abstract class
+
+**Front:**
+When should you use an abstract class instead of a regular class or interface?
+
+**Back:**
+Use an abstract class when you want to **share implementation** while **enforcing a contract**.
+
+**Good fit for abstract class:**
+- Common base functionality that subclasses share
+- Some methods have sensible defaults, others must be customized
+- You want to prevent instantiation of incomplete implementations
+
+```python
+from abc import ABC, abstractmethod
+
+class PaymentProcessor(ABC):
+    def __init__(self, merchant_id):
+        self.merchant_id = merchant_id  # Shared state
+
+    def log_transaction(self, amount):  # Shared implementation
+        print(f"Merchant {self.merchant_id}: ${amount}")
+
+    @abstractmethod
+    def process(self, amount) -> bool:  # Must be customized
+        pass
+
+class StripeProcessor(PaymentProcessor):
+    def process(self, amount) -> bool:
+        # Stripe-specific implementation
+        self.log_transaction(amount)  # Reuse parent method
+        return True
+```
+
+**Use a regular class** if all methods have implementations.
+**Use an interface** if you only need a contract with no shared code.
+
+---
+
+### What is an interface in Python?
+
+**Front:**
+What is an interface in Python?
+
+**Back:**
+An **interface** is an abstract class that contains *only* abstract methods—a pure contract with no implementation.
+
+```python
+from abc import ABC, abstractmethod
+
+class Serializable(ABC):
+    @abstractmethod
+    def to_json(self) -> str:
+        pass
+
+    @abstractmethod
+    def to_xml(self) -> str:
+        pass
+
+class User(Serializable):
+    def __init__(self, name):
+        self.name = name
+
+    def to_json(self) -> str:
+        return f'{{"name": "{self.name}"}}'
+
+    def to_xml(self) -> str:
+        return f"<user><name>{self.name}</name></user>"
+```
+
+**Key points:**
+- Python has no `interface` keyword—uses `ABC` for this purpose
+- Interfaces define *what* must be implemented, not *how*
+- Avoid adding `__init__` to interfaces (focus on method contracts)
+
+---
+
+### Interface vs abstract class
+
+**Front:**
+What's the difference between an interface and an abstract class in Python?
+
+**Back:**
+| Aspect | Interface | Abstract Class |
+|--------|-----------|----------------|
+| Methods | Only abstract | Mix of abstract and concrete |
+| Implementation | None | Can share code |
+| `__init__` | Avoid | Can have |
+| Purpose | Pure contract | Contract + shared behavior |
+
+```python
+from abc import ABC, abstractmethod
+
+# Interface: pure contract
+class Drawable(ABC):
+    @abstractmethod
+    def draw(self) -> None:
+        pass
+
+# Abstract class: contract + shared behavior
+class Shape(ABC):
+    def __init__(self, color):
+        self.color = color
+
+    def describe(self):
+        return f"A {self.color} shape"
+
+    @abstractmethod
+    def area(self) -> float:
+        pass
+```
+
+**When to use each:**
+- **Interface:** Multiple unrelated classes need the same capability (e.g., `Serializable`, `Comparable`)
+- **Abstract class:** Related classes share common behavior and state
+
