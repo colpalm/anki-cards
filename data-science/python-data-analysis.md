@@ -553,3 +553,209 @@ else:
 
 ---
 
+### NumPy Broadcasting Rules
+
+**Front:**
+What are NumPy's broadcasting rules? Given these arrays, what shape results from `a + b`?
+
+```python
+a = np.ones((3, 4))      # shape (3, 4)
+b = np.array([1, 2, 3, 4])  # shape (4,)
+```
+
+**Back:**
+Broadcasting allows operations between arrays of different shapes by "stretching" smaller dimensions to match larger ones.
+
+**The rules:**
+1. Align shapes from the **right** (trailing dimensions)
+2. Dimensions match if they're equal OR one of them is 1
+3. Missing dimensions on the left are treated as 1
+
+```python
+a = np.ones((3, 4))         # shape (3, 4)
+b = np.array([1, 2, 3, 4])  # shape    (4,)
+# Aligned:                         (3, 4)
+#                                     (4,)  ← treated as (1, 4)
+# Result:                          (3, 4)  ← the 1 stretches to 3
+```
+
+**Common patterns:**
+- `(n, m) + (m,)` → `(n, m)` — add vector to each row
+- `(n, m) + (n, 1)` → `(n, m)` — add column vector to each column
+- `(batch, features) + (features,)` → add bias in neural networks
+
+**Fails when:**
+```python
+np.ones((3, 4)) + np.ones((3,))  # Error! 4 != 3, neither is 1
+```
+
+---
+
+### NumPy View vs Copy Semantics
+
+**Front:**
+When does NumPy slicing return a view (shares memory with original) vs a copy (independent data)? What's the practical consequence?
+
+**Back:**
+**View (shares memory):** Basic slicing with `:` syntax
+```python
+arr = np.array([1, 2, 3, 4, 5])
+view = arr[1:4]
+view[0] = 99
+arr  # [1, 99, 3, 4, 5] — original modified!
+```
+
+**Copy (independent):** Boolean indexing and fancy (integer array) indexing
+```python
+arr = np.array([1, 2, 3, 4, 5])
+copy = arr[[1, 2, 3]]  # fancy indexing
+copy[0] = 99
+arr  # [1, 2, 3, 4, 5] — original unchanged
+
+mask_copy = arr[arr > 2]  # boolean indexing
+mask_copy[0] = 99
+arr  # still unchanged
+```
+
+**Practical consequences:**
+- Views are memory-efficient but mutations propagate unexpectedly
+- Use `.copy()` explicitly when you need independence from a slice
+- Boolean/fancy indexing can't write back: `arr[arr > 0] = 0` works (direct assignment), but modifying the result of `arr[arr > 0]` doesn't affect `arr`
+
+---
+
+### NumPy Axis Conventions
+
+**Front:**
+In NumPy, what does `axis=0` vs `axis=1` mean? For a 2D array with shape `(3, 4)`, what shape does `arr.sum(axis=0)` return?
+
+**Back:**
+**Mental model:** `axis=n` means "collapse/move along dimension n"
+
+For a 2D array `(rows, cols)`:
+- `axis=0` → operate **down rows** → result has shape `(cols,)`
+- `axis=1` → operate **across columns** → result has shape `(rows,)`
+
+```python
+arr = np.array([[1, 2, 3, 4],
+                [5, 6, 7, 8],
+                [9, 10, 11, 12]])  # shape (3, 4)
+
+arr.sum(axis=0)  # [15, 18, 21, 24] — shape (4,), summed down rows
+arr.sum(axis=1)  # [10, 26, 42] — shape (3,), summed across columns
+```
+
+**For 3D arrays** `(batch, height, width)`:
+- `axis=0` → across batches
+- `axis=1` → across height (down)
+- `axis=2` → across width (right)
+
+**Memory aid:** The axis you specify is the one that **disappears** from the output shape.
+
+---
+
+### NumPy Vectorization Mental Model
+
+**Front:**
+Why is `np.array * 2` orders of magnitude faster than a Python list comprehension doing the same thing? What's happening under the hood?
+
+**Back:**
+**Python loop overhead:**
+```python
+my_list = list(range(1_000_000))
+[x * 2 for x in my_list]  # ~50-100ms
+```
+Each iteration: Python checks types, looks up the `*` operator, boxes/unboxes values, manages loop state.
+
+**NumPy vectorized:**
+```python
+my_arr = np.arange(1_000_000)
+my_arr * 2  # ~1-2ms (50-100x faster)
+```
+Single dispatch to C code that operates on contiguous memory without Python overhead.
+
+**Key insights:**
+- NumPy stores data in **contiguous memory blocks** with fixed dtypes
+- Operations execute in compiled C/Fortran, not interpreted Python
+- No per-element type checking or memory allocation
+
+**Practical implication:** When you see a Python loop over array elements, ask "can this be vectorized?"
+
+---
+
+### NumPy Boolean Array Indexing
+
+**Front:**
+How does boolean array indexing work in NumPy? How do you select all rows where a condition is true?
+
+**Back:**
+Comparisons on arrays produce boolean arrays. These can be used directly as indices:
+
+```python
+arr = np.array([1, -2, 3, -4, 5])
+
+# Comparison creates boolean mask
+mask = arr > 0  # [True, False, True, False, True]
+
+# Boolean indexing selects matching elements
+arr[mask]       # [1, 3, 5]
+arr[arr > 0]    # same thing, inline
+```
+
+**With 2D arrays** — select entire rows:
+```python
+data = np.array([[1, 2], [3, 4], [5, 6]])
+names = np.array(["a", "b", "a"])
+
+data[names == "a"]  # [[1, 2], [5, 6]] — rows where name is "a"
+```
+
+**Combine conditions** with `&` (and), `|` (or), `~` (not):
+```python
+mask = (arr > 0) & (arr < 4)  # parentheses required!
+arr[~(arr > 0)]  # [-2, -4] — NOT greater than 0
+```
+
+**Direct assignment through boolean index:**
+```python
+arr[arr < 0] = 0  # replace negatives with 0
+```
+
+---
+
+### NumPy Shape Inference Through Operations
+
+**Front:**
+What are the resulting shapes after each operation?
+
+```python
+x = np.ones((4, 3))
+y = np.ones((3,))
+
+a = x @ y           # ?
+b = x.T             # ?
+c = x.sum(axis=1)   # ?
+d = x.reshape(-1)   # ?
+e = x.reshape(2, -1) # ?
+```
+
+**Back:**
+```python
+x = np.ones((4, 3))
+y = np.ones((3,))
+
+a = x @ y             # (4,) — matrix (4,3) @ vector (3,) → vector (4,)
+b = x.T               # (3, 4) — transpose swaps dimensions
+c = x.sum(axis=1)     # (4,) — collapse axis 1 (the 3), keep axis 0 (the 4)
+d = x.reshape(-1)     # (12,) — flatten to 1D, -1 infers size
+e = x.reshape(2, -1)  # (2, 6) — 2 rows, -1 infers 6 columns (12/2)
+```
+
+**Key rules:**
+- `@` (matmul): `(m, n) @ (n, p)` → `(m, p)`; `(m, n) @ (n,)` → `(m,)`
+- `.T`: reverses dimension order
+- `.sum(axis=k)`: removes dimension k from shape
+- `.reshape(-1)`: exactly one `-1` allowed, inferred from total size
+
+
+
