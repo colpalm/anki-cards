@@ -1031,7 +1031,7 @@ hash((1, 2, [3, 4]))  # TypeError: unhashable type: 'list'
 
 ### What is a Heap / Priority Queue
 **Front:**
-What is a heap (priority queue)? When do heaps shine compared to sorting?
+What is a heap (priority queue)? What is the heap property? When do heaps shine compared to sorting? When should you not use them?
 
 **Back:**
 A **heap** is a data structure that efficiently maintains the minimum (or maximum) element for quick access.
