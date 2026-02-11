@@ -314,6 +314,32 @@ Use lambdas for simple, one-off sort keys.
 
 ---
 
+### Multi-Level Sorting with Tuple Keys
+
+**Front:**
+How do you sort by multiple criteria in Python (e.g., by score descending, then by name ascending for ties)?
+
+**Back:**
+Return a **tuple** from the `key` function — Python compares tuples element-by-element, so each position acts as a tiebreaker.
+
+```python
+students = [
+    {'name': 'Alice', 'score': 90},
+    {'name': 'Charlie', 'score': 85},
+    {'name': 'Bob', 'score': 90},
+]
+
+students.sort(key=lambda s: (-s['score'], s['name']))
+# [{'name': 'Alice', 'score': 90},
+#  {'name': 'Bob', 'score': 90},
+#  {'name': 'Charlie', 'score': 85}]
+```
+
+- **Negate numeric values** (`-score`) to reverse that field's order
+- **Strings can't be negated** — if you need strings descending, use a separate `.sort()` call (Python's sort is stable, so earlier sorts are preserved as tiebreakers)
+
+---
+
 ### String Sorting (Lexicographical)
 **Front:**
 How are strings sorted by default in Python? What's the result of sorting `["grape", "Apple", "banana"]`?
@@ -1370,6 +1396,63 @@ ss.pop(0)  # 80 — removes and returns SMALLEST (first index)
 Raises `KeyError` if set is empty.
 
 **Use case:** Efficiently track and remove min/max values.
+
+---
+
+### `with` Statement for File Handling
+**Front:**
+Why should you use `with open()` instead of manually calling `open()` and `close()`? Show the pattern.
+
+**Back:**
+`with` automatically closes the file when the block exits — even if an exception occurs. It also makes the file's lifecycle visually clear.
+
+```python
+with open('data.txt', 'r') as f:
+    content = f.read()
+# f is automatically closed here
+```
+
+Without `with`, you risk leaving files open if an error occurs between `open()` and `close()`.
+
+```python
+f = open('data.txt', 'r')
+content = f.read()    # if this raises, close() never runs
+f.close()
+```
+
+The `with` statement works with any **context manager** (not just files) — database connections, locks, etc.
+
+---
+
+### File Reading: readlines() vs Iterating the File Object
+**Front:**
+What's the difference between `f.readlines()` and iterating directly over a file object? When does it matter?
+
+**Back:**
+`f.readlines()` — loads **all lines into a list** in memory at once.
+
+Iterating `for line in f:` — reads **one line at a time** (lazy iterator).
+
+```python
+with open('large_file.txt', 'r') as f:
+    # Loads entire file into memory
+    lines = f.readlines()
+
+with open('large_file.txt', 'r') as f:
+    # Memory efficient — one line at a time
+    for line in f:
+        process(line)
+```
+
+**When it matters:** Large files. `readlines()` on a 10GB file will try to allocate 10GB of memory. The iterator won't.
+
+**Use `readlines()`** when you need indexing/slicing (e.g., `lines[1:]` to skip a header).
+**Use the iterator** when you're processing sequentially and don't need random access.
+
+**Other read methods:**
+- `f.read()` — returns entire file as a **single string**
+- `f.readline()` — returns the **next single line** (including `\n`)
+  - Might use with a `while` loop pattern but iterator (`for line in f`) is more common
 
 ---
 
