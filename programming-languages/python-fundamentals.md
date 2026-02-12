@@ -1456,3 +1456,122 @@ with open('large_file.txt', 'r') as f:
 
 ---
 
+### map() Function
+**Front:**
+What does `map()` do, what does it return, and when would you use it over a list comprehension?
+
+**Back:**
+`map(function, iterable)` applies a function to every element and returns an **iterator** (wrap with `list()` to get a list).
+
+```python
+nums = [1, 2, 3]
+list(map(str, nums))        # ['1', '2', '3']
+list(map(lambda x: x * 2, nums))  # [2, 4, 6]
+```
+
+**List comprehensions are generally preferred** — they're more readable and Pythonic:
+```python
+[str(n) for n in nums]      # Preferred over map(str, nums)
+[x * 2 for x in nums]       # Preferred over map(lambda x: x * 2, nums)
+```
+
+**When `map()` is a good fit:**
+- Applying an **existing named function** to every element — `map(str, nums)` is arguably cleaner than `[str(n) for n in nums]`
+- Chaining with other functional tools in a pipeline
+- **Large/streaming data** — since it returns an iterator, elements are processed one at a time without building the full list in memory (list comprehensions materialize the entire list; generator expressions `(x for x in ...)` are the comprehension equivalent)
+
+If you find yourself writing `map(lambda ..., seq)`, a list comprehension is almost always better.
+
+---
+
+### filter() Function
+**Front:**
+What does `filter()` do, what does it return, and when would you use it over a list comprehension?
+
+**Back:**
+`filter(function, iterable)` keeps only elements where the function returns `True`. Returns an **iterator**.
+
+```python
+nums = [1, 2, 3, 4, 5, 6]
+list(filter(lambda x: x % 2 == 0, nums))  # [2, 4, 6]
+```
+
+**List comprehensions are generally preferred:**
+```python
+[x for x in nums if x % 2 == 0]  # Preferred — clearer intent
+```
+
+**When `filter()` is a good fit:**
+- Filtering with an **existing named function** — `filter(str.isdigit, characters)` reads cleanly
+- **Large/streaming data** — since it returns an iterator, elements are processed one at a time without building the full list in memory (list comprehensions materialize the entire list; generator expressions `(x for x in ...)` are the comprehension equivalent)
+- Using `filter(None, iterable)` to remove falsy values:
+
+```python
+items = [0, 1, "", "hello", None, 42]
+list(filter(None, items))  # [1, 'hello', 42]
+```
+
+The `filter(None, ...)` pattern is the one case where `filter()` is notably more concise than the comprehension equivalent (`[x for x in items if x]`).
+
+---
+
+### json.loads() vs json.dumps()
+**Front:**
+What do `json.loads()` and `json.dumps()` do? What do the "s" suffixes stand for?
+
+**Back:**
+Both are in the `json` module. The "s" stands for **string**.
+
+- `json.loads(string)` — **load string** → parses a JSON string into a Python object (dict or list)
+- `json.dumps(object)` — **dump string** → converts a Python object into a JSON string
+
+```python
+import json
+
+# JSON string → Python object
+data = json.loads('{"name": "Alice", "age": 30}')
+data['name']  # 'Alice'
+
+# Python object → JSON string
+json.dumps(data)  # '{"name": "Alice", "age": 30}'
+```
+
+**Useful `dumps()` parameters for debugging:**
+```python
+json.dumps(data, indent=2)          # Pretty-print with indentation
+json.dumps(data, sort_keys=True)    # Alphabetize keys
+```
+
+**Note:** There are also `json.load(file)` and `json.dump(obj, file)` (no "s") which read/write directly from/to file objects instead of strings.
+
+---
+
+### requests.get() Basics
+**Front:**
+How do you make an HTTP GET request in Python? What are the key attributes of the response object?
+
+**Back:**
+Use the `requests` module (third-party, install with `pip install requests`).
+
+```python
+import requests
+
+# Basic request
+resp = requests.get("https://api.example.com/data")
+
+# With query parameters (handles URL encoding for you)
+resp = requests.get("https://api.example.com/search", params={"q": "hello world", "limit": 5})
+# Generates: https://api.example.com/search?q=hello+world&limit=5
+```
+
+**Key Response attributes:**
+- `resp.status_code` — HTTP status (200 = success, 404 = not found, etc.)
+- `resp.text` — response body as a string
+- `resp.json()` — parse response body as JSON (shorthand for `json.loads(resp.text)`)
+- `resp.url` — the actual URL that was requested (useful for debugging)
+
+**Always use `params`** instead of manually building query strings — it handles special character encoding (spaces → `+`, quotes → `%22`, etc.).
+
+**Alternatives:** `urllib` (built-in, more verbose) and `httpx` (newer, supports async natively).
+
+---
