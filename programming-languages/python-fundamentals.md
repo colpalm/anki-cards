@@ -3,6 +3,7 @@
 ## Sources
 - [NeetCode Python for Beginners](https://neetcode.io/problems/python-hello-world/question)
 - [NeetCode Python for Coding Interviews](https://neetcode.io/problems/python-sort-ascending/question)
+- [Python 3 Programming Specialization](https://www.coursera.org/specializations/python-3-programming)
 
 
 ## Cards
