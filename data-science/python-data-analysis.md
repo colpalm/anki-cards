@@ -757,5 +757,112 @@ e = x.reshape(2, -1)  # (2, 6) — 2 rows, -1 infers 6 columns (12/2)
 - `.sum(axis=k)`: removes dimension k from shape
 - `.reshape(-1)`: exactly one `-1` allowed, inferred from total size
 
+---
+
+### String split() and join()
+**Front:**
+How do you split a string into pieces and rejoin them with a different delimiter? What is the common split → transform → join pattern?
+
+**Back:**
+`string.split(delimiter)` breaks a string into a list. 
+`delimiter.join(list)` combines a list into a string.
+
+```python
+val = "a,b,  guido"
+pieces = val.split(",")      # ['a', 'b', '  guido']
+
+# Clean up and rejoin
+pieces = [x.strip() for x in val.split(",")]  # ['a', 'b', 'guido']
+"::".join(pieces)             # 'a::b::guido'
+```
+
+**Key details:**
+- `split()` with no argument splits on any whitespace and removes empty strings
+- `join()` is called on the **separator**, not the list — `sep.join(list)`
+- `replace()` is simpler when you just need to swap one delimiter for another: `val.replace(",", "::")`
+
+```python
+"  hello   world  ".split()     # ['hello', 'world']
+"  hello   world  ".split(" ")  # ['', '', 'hello', '', '', 'world', '', '']
+# With an explicit delimiter, every single occurrence is a cut point —
+# even consecutive ones. Think of it like CSV: "a,,b".split(",") → ['a', '', 'b'].
+# Each delimiter produces a segment on either side. When two delimiters are
+# adjacent, the segment between them is an empty string.
+#
+# "  hello   world  "
+#  ^1^2     ^3^4^5     ^6^7     ← 7 spaces = 7 cuts = 8 segments
+#
+# Segments: '', '', 'hello', '', '', 'world', '', ''
+# N consecutive spaces produce N-1 empty strings between the surrounding words.
+# At the edges, each space still produces a segment on both sides, but since there's no character to "anchor" the outer side, you get an extra empty string compared to internal runs of the same length.
+```
+
+---
+
+### str.index() vs str.find()
+**Front:**
+What's the difference between `str.index()` and `str.find()` for locating substrings?
+
+**Back:**
+Both return the position of the first occurrence of a substring, but they differ on failure:
+
+- `find()` returns **-1** if not found
+- `index()` raises **ValueError** if not found
+
+```python
+val = "a,b,  guido"
+
+val.find(",")    # 1
+val.index(",")   # 1
+
+val.find(":")    # -1
+val.index(":")   # ValueError: substring not found
+```
+
+**When to use which:**
+- `find()` — when absence is a normal/expected case you want to handle with a conditional
+- `index()` — when absence is an error that should be surfaced immediately
+
+```python
+# find() pattern — check before using
+pos = val.find(":")
+if pos != -1:
+    do_something(pos)
+
+# index() pattern — fail fast
+pos = val.index(",")  # crash if missing, that's a bug
+```
+
+Same pattern as `dict[key]` (KeyError) vs `dict.get(key)` (returns None).
+
+---
+
+### Categorical Data: Why and When
+**Front:**
+What is categorical data in pandas, and why would you convert a column to the `category` dtype?
+
+**Back:**
+Categorical data stores repeated string values as **integer codes** referencing a small table of unique categories — the same idea as a dimension table in a data warehouse or an enum in a database.
+
+```python
+s = pd.Series(['apple', 'orange', 'apple', 'apple'] * 2_500_000)
+
+# Convert to category
+cat_s = s.astype('category')
+```
+
+**Why it matters:**
+- **Memory:** Stores integers instead of repeated strings. A 10M-element Series dropped from ~600MB to ~10MB
+- **Performance:** Operations like `value_counts()` run ~20x faster on categorical data
+- **Semantics:** Categories can be ordered (e.g., "low" < "medium" < "high"), enabling meaningful comparisons and sorting
+
+**Under the hood:**
+```python
+c = cat_s.cat
+c.categories  # Index(['apple', 'orange']) — the lookup table
+c.codes       # array([0, 1, 0, 0, ...]) — integer references
+```
+
+**When to use:** Columns with a small number of distinct values repeated many times (status codes, country names, rating levels, etc.).
 
 
