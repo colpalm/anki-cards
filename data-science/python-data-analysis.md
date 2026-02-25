@@ -865,4 +865,67 @@ c.codes       # array([0, 1, 0, 0, ...]) — integer references
 
 **When to use:** Columns with a small number of distinct values repeated many times (status codes, country names, rating levels, etc.).
 
+---
 
+### Long vs. Wide Data Formats
+
+**Front:**
+What are "long" and "wide" data formats, and when would you choose each?
+
+**Back:**
+**Wide format** — each variable gets its own column. One row per entity.
+
+- `date | temp | humidity | wind`
+
+**Long format** — a single "variable" column and a single "value" column. Multiple rows per entity.
+
+- `date | variable | value`
+
+**When to use each:**
+- **Long (tidy):** preferred for analysis, grouping, and plotting — most tools expect it
+- **Wide:** preferred for human-readable reports, side-by-side comparison, and some ML model inputs (features as columns)
+
+Converting between them is called **reshaping** or **pivoting**.
+
+---
+
+### Recognizing When to Reshape Data
+
+**Front:**
+When does wide format data become a problem, and what's the signal that you should reshape to long format?
+
+**Back:**
+Wide format works fine for simple operations like plotting each column as a series. It becomes a problem when you need to **treat the variable as a dimension** — filtering, grouping, or faceting on it.
+
+Examples where long format is needed:
+- Filter to a subset of categories (e.g., "show only EU and APAC")
+- Group by category (e.g., "average revenue across regions")
+- Map categories to a visual property like color or facet (seaborn `hue`, ggplot `facet`)
+
+**The signal:** if column names contain data values (e.g., `revenue_US`, `revenue_EU`), and you need to operate on those values as a group, reshape to long format.
+
+**The general principle:** the shape of your data should match the operation you're performing.
+
+---
+
+### SQL Join Types
+
+**Front:**
+What rows are included in an inner, left, right, and outer join? Given these two tables, what does each produce?
+
+- `left: [A, B, C]`
+- `right: [B, C, D]`
+
+**Back:**
+The join type controls **which rows survive** when keys don't match:
+
+- **Inner:** only rows with matching keys in **both** tables → `[B, C]`
+- **Left:** all rows from the left table, matched where possible → `[A, B, C]` (A gets nulls for right columns)
+- **Right:** all rows from the right table, matched where possible → `[B, C, D]` (D gets nulls for left columns)
+- **Outer (full):** all rows from **both** tables → `[A, B, C, D]` (A and D get nulls where unmatched)
+
+**Key insight:** inner shrinks your data (drops non-matches), outer preserves everything (fills gaps with nulls), left/right preserve one side.
+
+**Watch out for many-to-many:** if key B appears 2 times in left and 3 times in right, any join type produces 2×3 = 6 rows for B. Joins can **expand** your data unexpectedly.
+
+---

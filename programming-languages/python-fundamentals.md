@@ -1111,7 +1111,7 @@ top = heap[0]                # Peek at minimum (1)
 
 ### Heap Pop
 **Front:**
-How do you remove and return the minimum element from a heap? What happens if the heap is empty?
+How do you remove and return the minimum element from a heap? What is the time complexity? What happens if the heap is empty?
 
 **Back:**
 ```python
@@ -1155,7 +1155,9 @@ while nums:
 - `heapify()`: **O(n)**
 - Pushing n elements one by one: **O(n log n)**
 
-`heapify()` is faster because it builds the heap bottom-up, doing less work for elements near the bottom (which are most elements).
+`heapify()` is faster because it builds the heap **bottom-up, sifting down**. In a binary tree, half the nodes are leaves (zero work), a quarter sift down 1 level, an eighth sift down 2, etc. Only the root sifts the full height. The expensive work is done by very few nodes.
+
+Pushing one by one sifts each element **up** from the bottom. As the tree grows, most elements travel the full height — the expensive work is done by most nodes.
 
 **Note:** Modifies the list in-place, returns `None`.
 
