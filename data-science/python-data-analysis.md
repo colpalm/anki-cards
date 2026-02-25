@@ -929,3 +929,37 @@ The join type controls **which rows survive** when keys don't match:
 **Watch out for many-to-many:** if key B appears 2 times in left and 3 times in right, any join type produces 2×3 = 6 rows for B. Joins can **expand** your data unexpectedly.
 
 ---
+
+### Matplotlib's Figure and Axes Model
+
+**Front:**
+What are the two core objects in matplotlib, how do they relate, and what's the recommended way to create them?
+
+**Back:**
+- **Figure** — the overall window/canvas. Controls size, saving to file, and spacing between subplots.
+- **Axes** — an individual plot area within a figure. Controls the actual data, labels, ticks, and legends.
+
+One figure can contain many axes (subplots). Each axes belongs to one figure. Nearly all plotting work happens on the `ax` object.
+
+**Recommended pattern** — object-oriented approach:
+```python
+fig, ax = plt.subplots()       # single plot — ax is one Axes object
+fig, axes = plt.subplots(2, 3) # 2×3 grid — axes is a 2D array
+
+ax.plot(data)
+ax.set_title("My Plot")
+ax.set_xlabel("X")
+```
+
+**Accessing subplots in a grid** — index with `axes[row, col]`:
+```python
+fig, axes = plt.subplots(2, 3)
+
+axes[0, 0].plot(data1)  # top-left
+axes[0, 2].plot(data2)  # top-right
+axes[1, 1].plot(data3)  # bottom-middle
+```
+
+**Avoid** the stateful/pyplot interface (`plt.plot()`, `plt.title()`) — it relies on matplotlib tracking the "current" figure and axes behind the scenes, which gets confusing with multiple subplots.
+
+---
