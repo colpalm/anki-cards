@@ -963,3 +963,248 @@ axes[1, 1].plot(data3)  # bottom-middle
 **Avoid** the stateful/pyplot interface (`plt.plot()`, `plt.title()`) — it relies on matplotlib tracking the "current" figure and axes behind the scenes, which gets confusing with multiple subplots.
 
 ---
+
+### Split-Apply-Combine
+
+**Front:**
+What is the "split-apply-combine" pattern in pandas, and what method implements it?
+
+**Back:**
+`groupby` implements a three-stage pattern:
+
+1. **Split** — divide data into groups based on one or more keys
+2. **Apply** — execute a function on each group independently (aggregation, transformation, or filtering)
+3. **Combine** — merge the results back into a single output
+
+```python
+df = pd.DataFrame({"region": ["East", "West", "East", "West"],
+                    "revenue": [100, 200, 150, 300]})
+
+# Split by region → Apply mean → Combine into Series
+df.groupby("region")["revenue"].mean()
+# region
+# East    125.0
+# West    250.0
+```
+
+Every groupby operation follows this pattern, whether you're calling `.mean()`, `.agg()`, `.apply()`, or `.transform()`. The differences are in **what the apply step does** and **what shape the combined output takes**.
+
+---
+
+### GroupBy Object is Lazy
+
+**Front:**
+What does `df.groupby("key")` return, and when does computation actually happen?
+
+**Back:**
+`groupby()` returns a **GroupBy object** — no computation happens yet. It's a lazy intermediate that stores grouping information and waits for you to call an action.
+
+```python
+grouped = df.groupby("key1")  # no computation — just a GroupBy object
+
+grouped.mean()    # NOW it computes — splits, applies mean, combines
+grouped.size()    # each call triggers a fresh split-apply-combine
+```
+
+**Useful things you can do with the GroupBy object before aggregating:**
+
+```python
+df = pd.DataFrame({"key1": ["a", "a", "b", "b"],
+                    "data1": [1, 2, 3, 4], "data2": [10, 20, 30, 40]})
+
+# Iterate over groups
+for name, group_df in df.groupby("key1"):
+    print(name, group_df.shape)
+# a (2, 3)
+# b (2, 3)
+
+# Select columns — controls what gets aggregated
+df.groupby("key1")["data1"].mean()
+# key1
+# a    1.5
+# b    3.5
+
+df.groupby("key1")[["data1", "data2"]].mean()
+#       data1  data2
+# key1
+# a       1.5   15.0
+# b       3.5   35.0
+
+# Collect groups into a dict
+groups = dict(list(df.groupby("key1")))
+groups["a"]
+#   key1  data1  data2
+# 0    a      1     10
+# 1    a      2     20
+```
+
+---
+
+### Flexible GroupBy Keys
+
+**Front:**
+What are the different types of things you can pass as grouping keys to `groupby()`?
+
+**Back:**
+You can group by much more than just column names:
+
+- **Column name(s):** `df.groupby("key1")` or `df.groupby(["key1", "key2"])`
+- **Array/list** matching the axis length: `df["data1"].groupby([states, years]).mean()`
+- **Dict or Series** mapping column names → group names (for grouping columns):
+  ```python
+  mapping = {"a": "red", "b": "red", "c": "blue"}
+  df.groupby(mapping, axis="columns").sum()
+  ```
+- **Function** applied to the index labels:
+  ```python
+  # Group people by name length
+  people.groupby(len).sum()
+  ```
+- **Index level** for hierarchical indexes: `df.groupby(level="cty", axis="columns")`
+- **Mix of the above:** `people.groupby([len, key_list]).min()`
+
+The key insight: anything that produces a **label per row (or column)** can be a grouping key.
+
+---
+
+### agg() with Multiple and Column-Specific Functions
+
+**Front:**
+What are the different ways to pass functions to `groupby().agg()` for applying multiple or column-specific aggregations?
+
+**Back:**
+`agg()` accepts several forms:
+
+- **Single function:** `grouped.agg("mean")` or `grouped.agg(np.mean)`
+- **List of functions** — applied to every column, produces MultiIndex columns:
+  ```python
+  grouped[["tip_pct", "total_bill"]].agg(["mean", "std", "max"])
+  ```
+- **List of tuples** — to rename output columns:
+  ```python
+  grouped["tip_pct"].agg([("average", "mean"), ("spread", np.std)])
+  ```
+- **Dict mapping columns → functions** — different aggregation per column:
+  ```python
+  grouped.agg({"tip": np.max, "size": "sum"})
+
+  # One column can get multiple functions
+  grouped.agg({"tip_pct": ["min", "max", "mean"],
+               "size": "sum"})
+  ```
+
+Custom functions work too — any function that reduces a group to a scalar:
+```python
+def peak_to_peak(arr):
+    return arr.max() - arr.min()
+
+grouped.agg(peak_to_peak)
+```
+
+---
+
+### apply() vs transform() in GroupBy
+
+**Front:**
+What is the difference between `groupby().apply()` and `groupby().transform()`? When would you use each?
+
+**Back:**
+Both run a function on each group, but they differ in **what they must return**:
+
+- **`apply()`** — flexible. Can return a scalar, Series, or DataFrame of any shape. Result shape depends on what the function returns.
+- **`transform()`** — constrained. Must return output with the **same shape as the input group**. The result is automatically aligned back to the original DataFrame's index.
+
+```python
+g = df.groupby("key")["value"]
+
+# transform: result has same length as df — one value per original row
+g.transform("mean")
+# 0    3.0    ← group "a" mean, broadcast to every "a" row
+# 1    6.0    ← group "b" mean
+# 2    3.0
+# ...
+
+# apply: result can be anything
+g.apply(lambda x: x.nlargest(2))  # top 2 per group — different shape
+```
+
+**Use `transform`** when you need a per-group calculation **aligned back to the original rows** — normalization, ranking, filling missing values:
+```python
+# Normalize within each group
+normalized = (df["value"] - g.transform("mean")) / g.transform("std")
+```
+
+**Use `apply`** when your function changes the shape — returning top-N rows, custom aggregations across multiple columns, or anything that doesn't map 1:1 back to the input.
+
+---
+
+### pivot_table()
+
+**Front:**
+What does `pivot_table()` do in pandas, and how does it relate to `groupby`? What are its key parameters?
+
+**Back:**
+`pivot_table()` is a **groupby aggregation displayed in a wide (spreadsheet-style) layout**. It groups by row and column keys, aggregates the values, and arranges the result as a cross-tabulation.
+
+```python
+tips.pivot_table(index=["time", "day"],  # row grouping keys
+                 columns="smoker",        # column grouping key
+                 values=["tip_pct", "size"],  # what to aggregate
+                 aggfunc="mean")          # how to aggregate (default: mean)
+```
+
+**Key parameters:**
+- `index` — keys for rows
+- `columns` — keys for columns (what makes it "wide" instead of just a groupby)
+- `values` — columns to aggregate
+- `aggfunc` — aggregation function (default `"mean"`); can be a list or dict
+- `margins=True` — adds row/column subtotals and a grand total
+- `fill_value=0` — replace NaN (missing combinations) with a value
+
+**Relationship to groupby:** `pivot_table` is equivalent to a `groupby` + `unstack`:
+```python
+# These produce the same result:
+tips.pivot_table(index="day", columns="smoker", values="tip_pct")
+tips.groupby(["day", "smoker"])["tip_pct"].mean().unstack("smoker")
+```
+
+**Related:** `pd.crosstab()` is a shortcut for `pivot_table` with `aggfunc="count"` — it computes frequency tables from categorical variables.
+
+---
+
+### pd.cut() vs pd.qcut()
+
+**Front:**
+What is the difference between `pd.cut()` and `pd.qcut()`? When would you choose one over the other?
+
+**Back:**
+Both bin continuous data into discrete groups, but they divide the range differently:
+
+- **`pd.cut(data, n)`** — creates `n` bins of **equal width** (same range per bin, different counts)
+- **`pd.qcut(data, n)`** — creates `n` bins of **equal frequency** (same count per bin, different widths)
+
+```python
+data = pd.Series([1, 2, 3, 4, 5, 100])
+
+pd.cut(data, 3)
+# Bins: (0.9, 34.0], (34.0, 67.0], (67.0, 100.0]
+# Most values land in the first bin — uneven group sizes
+
+pd.qcut(data, 3)
+# Bins: (0.99, 2.67], (2.67, 4.33], (4.33, 100.0]
+# Each bin has ~2 values — even group sizes, uneven widths
+```
+
+**When to use each:**
+- `cut` — when the bin boundaries matter (e.g., age ranges 0-18, 18-65, 65+)
+- `qcut` — when you want equal-sized groups (e.g., quartiles, deciles for ranking)
+
+**Common pattern** — use as a groupby key to analyze data by bin:
+```python
+bins = pd.qcut(df["income"], 4, labels=["Q1", "Q2", "Q3", "Q4"])
+df.groupby(bins)["spending"].mean()
+```
+
+You can also pass custom bin edges to `cut`: `pd.cut(data, [0, 18, 65, 100])`.
+
+---
