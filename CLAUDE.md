@@ -8,7 +8,7 @@ This repository contains Anki flashcards for building deep, lasting knowledge ac
 
 ### Philosophy
 - Focus on **conceptual understanding** over trivia
-- Ask "would knowing this make someone better at the craft?" not "might this appear on an exam/interview?"
+- Ask "would knowing this make someone better at the craft?"
 - Lead with the concept, use concrete examples to illustrate
 - Keep cards atomic - one idea per card
 - Avoid overly specific examples that don't generalize
