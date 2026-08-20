@@ -13,6 +13,7 @@ This repository contains Anki flashcards for building deep, lasting knowledge ac
 - Keep cards atomic - one idea per card
 - Avoid overly specific examples that don't generalize
 - Prefer bullet points over tables - markdown tables don't translate well to Anki cards
+- Be concise and direct. Less is more
 - Note: Feel free to recommend cards if you think it is important and related to a current topic even if it is not present in the notes.
 
 ### Format
@@ -27,8 +28,20 @@ The question or prompt
 **Back:**
 The answer, with code examples if helpful
 
+**Tags:**
+topic::tags source::tag
+
 ---
 ```
+
+### Tags
+
+Two orthogonal axes, space-separated on the `**Tags:**` line. Anki tags are hierarchical via `::`.
+
+- **Topic** — e.g. `ml::llm::inference`. Nest under the broadest domain so tags roll up; add a deeper level only when a topic outgrows a flat list (~20 cards).
+- **Source** — one per file, matching the Sources section, e.g. `source::modular-handbook`.
+
+Skip difficulty and status tags — Anki's scheduler already tracks that.
 
 ### Card Types
 
