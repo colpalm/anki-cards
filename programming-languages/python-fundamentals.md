@@ -100,11 +100,15 @@ s[::-1]
 
 Slicing syntax: `s[start:end:step]`
 - `step = -1`: traverse backward
-- When step is negative, Python switches the defaults: omitted `start` becomes end of string, omitted `end` becomes before the beginning
+- A negative step only changes the **defaults** for omitted bounds: `start` defaults to the last element, `end` to before the beginning. Explicit bounds are never swapped — the walk still has to reach `end` by stepping backward from `start`, or you get an empty result.
 
 ```python
-"hello"[::-1]  # "olleh"
+"hello"[::-1]     # "olleh"
+"hello"[2:5:-1]   # ""  — can't reach index 5 going backward from 2
+"hello"[4:1:-1]   # "oll"
 ```
+
+Works the same for lists and tuples.
 
 ---
 
@@ -392,6 +396,98 @@ x, y = [1, 2, 3]  # ValueError: too many values to unpack
 
 ---
 
+### Starred Unpacking (`*`)
+**Front:**
+Plain unpacking requires an exact match of variables to values. How do you unpack a variable-length iterable?
+
+**Back:**
+Prefix one variable with `*` — it absorbs however many items are left over.
+
+```python
+first, *rest = [1, 2, 3, 4]   # first = 1,  rest = [2, 3, 4]
+*init, last = [1, 2, 3, 4]    # init = [1, 2, 3],  last = 4
+a, *mid, b = [1, 2, 3, 4]     # a = 1,  mid = [2, 3],  b = 4
+```
+
+- The starred name is **always a list**, even when the source is a tuple or string, and even when it absorbs nothing (`a, *rest = [1]` → `rest = []`)
+- At most one `*` per assignment — otherwise the split is ambiguous
+- Non-starred names still must be satisfied: `a, b, *rest = [1]` raises `ValueError`
+- Useful for discards: `first, *_ = row`
+
+---
+
+### `*` and `**`: Collect vs Spread
+**Front:**
+`*` and `**` show up in function definitions, function calls, assignments, and literals. What decides whether they collect or spread?
+
+**Back:**
+Whether the starred expression is a **target** (a name being bound) or a **value** (an object being passed along).
+
+- **Target** — parameter in a `def`, name on the left of `=` → **collects** loose values into one object
+- **Value** — argument in a call, element in a literal → **spreads** one object into loose values
+
+```python
+# Targets — collect
+def f(*args): ...      # f(1, 2, 3)  ->  args = (1, 2, 3)
+first, *rest = xs      # [1, 2, 3]   ->  first = 1, rest = [2, 3]
+
+# Values — spread
+f(*[1, 2, 3])          # [1, 2, 3]   ->  f(1, 2, 3)
+combined = [*xs, *ys]  # [1, 2, 3], [4, 5]  ->  [1, 2, 3, 4, 5]
+```
+
+Not "definition vs call" — assignment and literals obey the same rule with no function involved. The two directions are exact inverses.
+
+---
+
+### Spreading Arguments at a Call Site
+**Front:**
+Given `args = [3, 5]` and `config = {"host": "localhost", "port": 8080}`, how do you pass each into a function as individual arguments?
+
+**Back:**
+```python
+dist(*args)        # same as dist(3, 5)
+connect(**config)  # same as connect(host="localhost", port=8080)
+```
+
+- `*` spreads **any iterable** into positional args — tuples, sets, generators, not just lists
+- `**` spreads a mapping into keyword args; keys must be strings
+- Mix freely with literal arguments; position is what matters: `f(0, *a, 9, **kw)`
+
+The same `*` works inside list/tuple/set literals, where it beats `+` because it accepts a mix of iterable types:
+```python
+[*some_tuple, *some_set, *some_gen]   # one flat list; `+` can't do this
+```
+
+---
+
+### `def f(*args, **kwargs)`
+**Front:**
+What do `*args` and `**kwargs` do in a function definition, and what type is each?
+
+**Back:**
+They collect any arguments the named parameters didn't claim.
+
+```python
+def log(level, *args, **kwargs):
+    print(level, args, kwargs)
+
+log("INFO", 1, 2, user="ana")
+# INFO (1, 2) {'user': 'ana'}
+```
+
+- `*args` → leftover positionals, always a **tuple**
+- `**kwargs` → leftover keywords, always a **dict**
+- Both are optional and empty (not `None`) when nothing is left over
+
+The classic use is a wrapper that forwards arguments it doesn't need to understand:
+```python
+def wrapper(*args, **kwargs):
+    return wrapped(*args, **kwargs)   # collect, then spread
+```
+
+---
+
 ### Enumerate
 **Front:**
 What does `enumerate()` do? Why use it instead of `range(len(list))`?
@@ -515,6 +611,10 @@ print(original)  # [[99, 2], [3, 4]] — original unchanged
 ```
 
 **Rule:** Use `deepcopy()` when your list contains mutable objects (lists, dicts, sets, custom objects).
+
+Notes:
+- With deepcopy(), time complexity may be more than O(n) with nested sequences
+- Dicts copy the same way, but the syntax hides it: `{**d}`, `dict(d)`, and `d1 | d2` are all shallow.
 
 ---
 
