@@ -544,6 +544,34 @@ list(zip([1, 2, 3], ['a', 'b']))  # [(1, 'a'), (2, 'b')]
 
 ---
 
+### Lazy Iterators Are One-Shot
+**Front:**
+What happens if you iterate twice over the result of `enumerate()`, `zip()`, `map()`, or `filter()`?
+
+**Back:**
+The second pass sees nothing. These return **one-shot iterators**, not reusable views — consuming one exhausts it permanently.
+
+```python
+e = enumerate(['a', 'b'])
+list(e)   # [(0, 'a'), (1, 'b')]
+list(e)   # [] — exhausted
+```
+
+This fails **silently** — you get an empty result, not an error. It bites when you pass an iterator to two functions, or loop after an early check:
+
+```python
+rows = filter(is_valid, data)
+count = sum(1 for _ in rows)   # consumes rows
+for r in rows:                 # never runs
+    process(r)
+```
+
+**Fixes:** call `list()` once if you need multiple passes, or rebuild the iterator each time.
+
+**Contrast:** `range` and dict views (`.keys()`, `.values()`, `.items()`) *are* re-iterable — they're views, not iterators.
+
+---
+
 ### List pop() vs pop(index) Time Complexity
 **Front:**
 What's the time complexity difference between `list.pop()` and `list.pop(index)`? Why?
@@ -610,6 +638,20 @@ deep[0][0] = 0
 print(original)  # [[99, 2], [3, 4]] — original unchanged
 ```
 
+**Only mutation leaks through — rebinding doesn't.** Replacing a slot points it at a new object; the original still holds the old one.
+
+```python
+original = [[1, 2], [3, 4]]
+shallow = original.copy()
+
+shallow[0] = [9, 9]   # rebind: swaps shallow's reference
+print(original)       # [[1, 2], [3, 4]] — unaffected
+print(shallow)        # [[9, 9], [3, 4]]
+
+shallow[1].append(5)  # mutate: same object both lists point to
+print(original)       # [[1, 2], [3, 4, 5]] — leaked
+```
+
 **Rule:** Use `deepcopy()` when your list contains mutable objects (lists, dicts, sets, custom objects).
 
 Notes:
@@ -620,7 +662,7 @@ Notes:
 
 ### List Membership Check is O(n)
 **Front:**
-What's the time complexity of `x in my_list`? What's the implication (or alternative)?
+What's the time complexity of `x in my_list`? If you need to do this check repeatedly, what should you use instead?
 
 **Back:**
 **O(n)** — Python must scan the list sequentially until it finds the element or reaches the end.
@@ -790,7 +832,7 @@ Both operations are O(1).
 Why should you use `collections.deque` instead of a list for queue operations in Python?
 
 **Back:**
-**Lists are dynamic arrays**, **deques are doubly linked lists**.
+**Lists are dynamic arrays**, **deques are doubly linked lists of fixed-size blocks**.
 
 Removing from the front:
 - `list.pop(0)`: **O(n)** — must shift all remaining elements left
@@ -836,6 +878,34 @@ d = deque([1, 2, 3])
 d.appendleft(0)  # [0, 1, 2, 3]
 d.pop()          # [0, 1, 2], returns 3
 ```
+
+**Skippable Deep Dive — why arbitrary indexing is O(n):**
+
+A `deque` is not a node-per-element linked list. It's a **doubly linked list of fixed-size blocks**, each holding 64 element pointers in a plain C array:
+
+```
+[ block0 ] <-> [ block1 ] <-> [ block2 ]
+ 64 slots       64 slots       64 slots
+```
+
+Looking up `d[i]` takes three steps:
+- **Arithmetic (free)** — `i // 64` gives the block *number*, `i % 64` gives the slot
+- **The walk (the O(n) part)** — hop that many `rightlink` pointers to reach the block
+- **Array access (free)** — one direct offset into `block->data[slot]`
+
+The block number is an **ordinal, not an address**. Blocks are separately allocated and scattered in memory, and the only record of where block 2 lives is the link field inside block 1 — so there is no way to jump straight there. Skipping the walk would require an array of block addresses, and maintaining that array would put an O(n) resize back into `appendleft()`, which is the whole point of a deque.
+
+CPython walks from whichever end is closer, so the true cost is **O(min(i, n-i))**.
+
+The 64-wide blocks make the walk 64x coarser than a node-per-element list, which hides the cost at small sizes — but dividing by a constant doesn't change the complexity class. Measured cost of `d[n//2]` vs `list[n//2]` (flat at ~17 ns):
+- n = 2,000 — ~29 ns (~2x)
+- n = 20,000 — ~174 ns (~10x)
+- n = 200,000 — ~9,000 ns (~540x)
+- n = 2,000,000 — ~100,000 ns (~5,900x)
+
+It degrades *worse* than linear once the block chain outgrows CPU cache: each hop is a dependent memory read that can't be prefetched, since you don't know the next address until the current read returns.
+
+**Practical upshot:** never index into the middle of a large deque, and note that `deque` doesn't support slicing at all (`d[1:3]` raises `TypeError`) — use `itertools.islice`. If you need arbitrary indexing, you wanted a `list`.
 
 ---
 
