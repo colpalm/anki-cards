@@ -806,7 +806,7 @@ removed = stack.pop() # Pop (2)
 
 ### Python Queue with collections.deque
 **Front:**
-How do you implement a queue in Python? Show the import, basic operations, and explain the ordering.
+How do you implement a FIFO queue in Python? Show the import and the enqueue/dequeue operations.
 
 **Back:**
 Use `collections.deque` for **FIFO** (First In, First Out) queues.
@@ -911,7 +911,7 @@ It degrades *worse* than linear once the block chain outgrows CPU cache: each ho
 
 ### Working with 2D Lists: Indexing and Dimensions
 **Front:**
-How do you access elements and get dimensions of a 2D list in Python? How do you get the number of rows and columns?
+How do you access elements and get dimensions (numbers of rows and columns) of a 2D list in Python?
 
 **Back:**
 **Accessing elements:** Use double indexing `grid[row][col]`
