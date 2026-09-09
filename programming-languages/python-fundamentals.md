@@ -783,7 +783,7 @@ if value in my_list:
 
 ### Using a List as a Stack in Python
 **Front:**
-How do you use a list as a stack in Python? What operations do you use and what are their time complexities?
+How do you use a list as a stack in Python? What operations (4 listed in card) do you use and what are their time complexities?
 
 **Back:**
 Python has no built-in stack—use a list with **LIFO** (Last In, First Out) semantics.
@@ -1303,6 +1303,45 @@ smallest = heapq.heappop(heap)  # Returns 1, heap is now [2, 3]
 empty = []
 heapq.heappop(empty)  # IndexError: index out of range
 ```
+
+---
+
+### heappushpop vs heapreplace
+**Front:**
+What do `heappushpop` and `heapreplace` do, and how do they differ? What pattern are they for?
+
+**Back:**
+Both combine a push and a pop into **one sift** instead of two — same O(log n), but they express "swap an element, keep the size fixed" in a single call.
+
+**The difference is the order, and it matters:**
+- `heappushpop(h, x)` — **pushes first**, then pops the min. If `x` is smaller than the current min, `x` comes straight back out and the heap is unchanged.
+- `heapreplace(h, x)` — **pops first**, then pushes. Always evicts the current min, even when `x` is smaller than it.
+
+```python
+h = [5, 7, 9]
+heapq.heappushpop(h, 2)  # returns 2, h unchanged — 2 was too small to belong
+heapq.heapreplace(h, 2)  # returns 5, h now holds 2 — evicted 5 to make room for something worse
+```
+
+**The pattern: a bounded heap of size k for streaming top-k.**
+
+```python
+h = []
+for x in stream:
+    if len(h) < k:
+        heapq.heappush(h, x)
+    else:
+        heapq.heappushpop(h, x)   # h stays at exactly k
+# h holds the k largest, since the min gets kicked out each time
+```
+
+This is the shape behind `nlargest`, "keep the 10 best checkpoints", and top-k filtering.
+
+**Use `heappushpop`** for top-k — the guard against admitting a too-small element is exactly what you want. Reaching for `heapreplace` here is a silent correctness bug: it drops a good element to admit a worse one.
+
+**Use `heapreplace`** when the swap is unconditional — you're consuming the min and always have a successor to put in its place (e.g. merging k sorted streams: pop the smallest, push the next item from that same stream).
+
+**Empty heap:** `heapreplace` raises `IndexError`; `heappushpop` just returns `x`.
 
 ---
 
