@@ -218,7 +218,7 @@ Describe the three types of errors:
 
 ### .sort() vs sorted()
 **Front:**
-What's the difference between `list.sort()` and `sorted(list)`?
+What's the difference between `list.sort()` and `sorted(list)`? Give the time and space complexity of each.
 
 **Back:**
 `.sort()`: Sorts **in-place**, returns `None`
@@ -541,6 +541,28 @@ Stops at shortest iterable:
 ```python
 list(zip([1, 2, 3], ['a', 'b']))  # [(1, 'a'), (2, 'b')]
 ```
+
+---
+
+### Iterable vs Iterator vs Generator
+**Front:**
+How do iterables, iterators, and generators relate? Why can you loop over a list twice but not a `zip()` result?
+
+**Back:**
+Each is a subset of the next: **generator ⊂ iterator ⊂ iterable**.
+
+- **Iterable** — has `__iter__()`, which returns a **fresh** iterator each call. Holds no position, so it's re-iterable (`list`, `str`, `dict`, `range`).
+- **Iterator** — has `__next__()` (returns the next value or raises `StopIteration`), and its `__iter__()` returns **itself**. Holds position, so it's one-shot (`zip`, `map`, `enumerate`, files).
+- **Generator** — an iterator you write with `yield`; Python implements `__iter__`/`__next__` and saves local state between calls.
+
+```python
+nums = [1, 2]
+iter(nums) is iter(nums)   # False — new iterator each time
+z = zip(nums, nums)
+iter(z) is z               # True — same exhausted object next loop
+```
+
+A `for` loop calls `iter()` once, then `next()` until `StopIteration` — which is why it accepts any iterable.
 
 ---
 
