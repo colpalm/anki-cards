@@ -6,6 +6,7 @@
 ## Cards
 
 ### What is a class in Python?
+<!-- anki:1767462799788 -->
 
 **Front:**
 What is a class in Python, and what is an object?
@@ -30,6 +31,7 @@ Class names use PascalCase by convention.
 ---
 
 ### What is the `__init__` method?
+<!-- anki:1767462881216 -->
 
 **Front:**
 What is the `__init__` method in a Python class, and when is it called?
@@ -52,6 +54,7 @@ You don't call `__init__` directly—Python calls it for you when you instantiat
 ---
 
 ### What does `self` represent?
+<!-- anki:1767463029844 -->
 
 **Front:**
 What does `self` represent in Python class methods, and why is it required?
@@ -76,6 +79,7 @@ hero.introduce()  # Python translates this to: SuperHero.introduce(hero)
 ---
 
 ### Instance attributes vs class attributes
+<!-- anki:1767463387842 -->
 
 **Front:**
 What's the difference between instance attributes and class attributes in Python?
@@ -106,6 +110,7 @@ print(hero1.team)        # Avengers (also accessible via instance)
 ---
 
 ### Method vs function
+<!-- anki:1767463441063 -->
 
 **Front:**
 What's the difference between a method and a function in Python?
@@ -131,6 +136,7 @@ Methods are called on objects using dot notation: `obj.method()`
 ---
 
 ### Accessing and modifying object attributes
+<!-- anki:1767463753103 -->
 
 **Front:**
 What is a simple way to access and modify an object's attributes in Python?
@@ -160,6 +166,7 @@ print(hero.health)  # 80
 ---
 
 ### Docstrings
+<!-- anki:1767464183250 -->
 
 **Front:**
 How do you retrieve a class or method's docstring programmatically in Python?
@@ -216,6 +223,7 @@ class SuperHero:
 ---
 
 ### What is encapsulation?
+<!-- anki:1768772278903 -->
 
 **Front:**
 What is encapsulation in object-oriented programming?
@@ -245,6 +253,7 @@ Think about a car - don't need to know the internals of the car, just how to use
 ---
 
 ### Python's access control conventions
+<!-- anki:1768772447547 -->
 
 **Front:**
 How does Python indicate public, protected, and private attributes? Is access actually enforced?
@@ -273,6 +282,7 @@ obj._Example__private  # works (mangling is not security)
 ---
 
 ### The @property decorator
+<!-- anki:1768772556228 -->
 
 **Front:**
 How do you use the `@property` decorator to create a getter and setter in Python?
@@ -305,6 +315,7 @@ This is the Pythonic alternative to Java-style `get_radius()` / `set_radius()` m
 ---
 
 ### When to use @property vs public attributes
+<!-- anki:1768772705921 -->
 
 **Front:**
 When should you use `@property` versus a plain public attribute in Python?
@@ -344,6 +355,7 @@ Unlike Java, you don't need getters/setters "just in case"—you can add them la
 ---
 
 ### What is a class method?
+<!-- anki:1768968958067 -->
 
 **Front:**
 What is a class method in Python, and when would you use one?
@@ -376,6 +388,7 @@ print(hero.name)  # Spider-Man (Peter Parker)
 ---
 
 ### How to define a class method
+<!-- anki:1768969051820 -->
 
 **Front:**
 How do you define and call a class method in Python?
@@ -408,6 +421,7 @@ print(hero.get_base_power())  # 100
 ---
 
 ### Why use `cls` instead of the class name?
+<!-- anki:1768969399562 -->
 
 **Front:**
 In a class method, why should you use `cls` instead of the class name directly?
@@ -439,6 +453,7 @@ If we used `Animal.count` instead of `cls.count`, all subclasses would share the
 ---
 
 ### What is a static method?
+<!-- anki:1768969713145 -->
 
 **Front:**
 What is a static method in Python, and when would you use one?
@@ -470,6 +485,7 @@ If the method doesn't use `self` or `cls`, it's a candidate for `@staticmethod`.
 ---
 
 ### How to define a static method
+<!-- anki:1768970041419 -->
 
 **Front:**
 How do you define a static method in Python?
@@ -496,6 +512,7 @@ print(hero.validate_name("spider-man"))  # False
 ---
 
 ### Class method vs static method
+<!-- anki:1768970071925 -->
 
 **Front:**
 When should you use a class method vs a static method?
@@ -537,6 +554,7 @@ d = Date.from_string("2024-01-15")
 ---
 
 ### What is inheritance?
+<!-- anki:1769050584624 -->
 
 **Front:**
 What is inheritance in Python? What happens to the parent's `__init__` when you create a child class?
@@ -567,6 +585,7 @@ iron_man.assemble()    # Iron Man assembles!
 ---
 
 ### Method overriding
+<!-- anki:1769050610910 -->
 
 **Front:**
 What is method overriding in Python? When would you use it?
@@ -596,6 +615,7 @@ To extend (rather than replace) the parent's behavior, use `super().method_name(
 ---
 
 ### The super() function
+<!-- anki:1769050653122 -->
 
 **Front:**
 What does `super()` do in Python? How do you use it with `__init__`?
@@ -627,6 +647,7 @@ print(avenger.team)  # Avengers (from child)
 ---
 
 ### Multiple inheritance
+<!-- anki:1769050675205 -->
 
 **Front:**
 What is multiple inheritance in Python? Why is it generally discouraged?
@@ -665,6 +686,7 @@ In most cases, prefer **composition over inheritance**.
 ---
 
 ### Composition vs inheritance (is-a vs has-a)
+<!-- anki:1769050705750 -->
 
 **Front:**
 What's the difference between composition and inheritance? When should you prefer one over the other?
@@ -700,6 +722,7 @@ class Car:
 ---
 
 ### Diamond problem and MRO
+<!-- anki:1769050750710 -->
 
 **Front:**
 What is the diamond problem in multiple inheritance? How does Python resolve it?
@@ -750,6 +773,7 @@ The order of parents in the class definition matters: `class D(B, C)` checks `B`
 ---
 
 ### Polymorphism
+<!-- anki:1769050776228 -->
 
 **Front:**
 What is polymorphism? What's the difference between runtime and compile-time polymorphism in Python?
@@ -786,6 +810,7 @@ animal_sound(Cat())  # Meow!
 ---
 
 ### Method overloading in Python
+<!-- anki:1769050904079 -->
 
 **Front:**
 Does Python support method overloading? How do you achieve similar behavior?
@@ -834,6 +859,7 @@ The first two approaches are idiomatic Python; `multipledispatch` is useful for 
 ---
 
 ### Duck typing
+<!-- anki:1769050932762 -->
 
 **Front:**
 What is duck typing in Python? Why is it considered idiomatic?
@@ -867,6 +893,7 @@ make_speak(Robot())  # Beep boop!
 ---
 
 ### isinstance() and issubclass()
+<!-- anki:1769050964090 -->
 
 **Front:**
 What do `isinstance()` and `issubclass()` do? When would you use them?
@@ -903,6 +930,7 @@ issubclass(Animal, Dog)    # False
 ---
 
 ### What is abstraction?
+<!-- anki:1769055489783 -->
 
 **Front:**
 What is abstraction in object-oriented programming?
@@ -928,6 +956,7 @@ Think of a TV remote—you press buttons to change channels without understandin
 ---
 
 ### Abstraction vs encapsulation
+<!-- anki:1769055665747 -->
 
 **Front:**
 What's the difference between abstraction and encapsulation?
@@ -957,6 +986,7 @@ class BankAccount:
 ---
 
 ### Abstract classes and methods in Python
+<!-- anki:1769055790611 -->
 
 **Front:**
 How do you create an abstract class and abstract method in Python?
@@ -995,6 +1025,7 @@ class Circle(Shape):
 ---
 
 ### When to use an abstract class
+<!-- anki:1769055879868 -->
 
 **Front:**
 When should you use an abstract class instead of a regular class or interface?
@@ -1034,6 +1065,7 @@ class StripeProcessor(PaymentProcessor):
 ---
 
 ### What is an interface in Python?
+<!-- anki:1769055932236 -->
 
 **Front:**
 What is an interface in Python?
@@ -1072,6 +1104,7 @@ class User(Serializable):
 ---
 
 ### Interface vs abstract class
+<!-- anki:1769056032293 -->
 
 **Front:**
 What's the difference between an interface and an abstract class in Python?

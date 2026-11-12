@@ -8,6 +8,7 @@
 ### Chapter 1 — The Machine Learning Landscape
 
 ### What Is Machine Learning?
+<!-- anki:1774326682687 -->
 
 **Front:**
 How would you define Machine Learning?
@@ -20,6 +21,7 @@ Key distinction from traditional programming: instead of explicitly coding rules
 ---
 
 ### When to Use Machine Learning
+<!-- anki:1774326723126 -->
 
 **Front:**
 What are four scenarios where Machine Learning is a better approach than traditional programming?
@@ -33,6 +35,7 @@ What are four scenarios where Machine Learning is a better approach than traditi
 ---
 
 ### Labeled Training Set
+<!-- anki:1774326756899 -->
 
 **Front:**
 What is a labeled training set?
@@ -47,6 +50,7 @@ Used in **supervised learning** — the algorithm learns to map inputs to known 
 ---
 
 ### Four Learning Paradigms by Label Availability
+<!-- anki:1774327272015 -->
 
 **Front:**
 What are the four main learning paradigms based on how labels are used in training data?
@@ -62,6 +66,7 @@ Semi-supervised and self-supervised both bridge the gap between supervised and u
 ---
 
 ### Supervised Learning Tasks
+<!-- anki:1774326986482 -->
 
 **Front:**
 What are the two most common supervised learning tasks, and how do they differ?
@@ -77,6 +82,7 @@ Note: many classifiers output a **probability** (e.g., 80% chance of spam) that 
 ---
 
 ### Common Unsupervised Learning Tasks
+<!-- anki:1774327235842 -->
 
 **Front:**
 What are four common unsupervised learning tasks?
@@ -90,6 +96,7 @@ What are four common unsupervised learning tasks?
 ---
 
 ### Reinforcement Learning
+<!-- anki:1774327472122 -->
 
 **Front:**
 When would you choose Reinforcement Learning over supervised or unsupervised learning? Give an example.
@@ -109,6 +116,7 @@ RL is the natural fit when:
 ---
 
 ### Clustering vs Classification for Customer Segmentation
+<!-- anki:1774327537228 -->
 
 **Front:**
 You want to segment customers into groups. When would you use clustering vs classification?
@@ -120,6 +128,7 @@ You want to segment customers into groups. When would you use clustering vs clas
 ---
 
 ### Online vs Batch Learning
+<!-- anki:1774327579554 -->
 
 **Front:**
 What is the key difference between online learning and batch learning?
@@ -136,6 +145,7 @@ Online learning is better when:
 ---
 
 ### Out-of-Core Learning
+<!-- anki:1774327801353 -->
 
 **Front:**
 What is out-of-core learning, and how does it work?
@@ -150,6 +160,7 @@ It's essentially online learning applied to the problem of limited memory rather
 ---
 
 ### Instance-Based vs Model-Based Learning
+<!-- anki:1774327898693 -->
 
 **Front:**
 How does an instance-based learning system make predictions, compared to a model-based system?
@@ -168,6 +179,7 @@ How does an instance-based learning system make predictions, compared to a model
 ---
 
 ### Model Parameters vs Hyperparameters
+<!-- anki:1774327943891 -->
 
 **Front:**
 What is the difference between a model parameter and a hyperparameter?
@@ -181,6 +193,7 @@ The learning algorithm optimizes model parameters; the practitioner tunes hyperp
 ---
 
 ### Main Challenges in Machine Learning
+<!-- anki:1774328028591 -->
 
 **Front:**
 What are the main challenges in Machine Learning (4 data, 2 model)?
@@ -199,6 +212,7 @@ Model problems:
 ---
 
 ### Diagnosing and Fixing Overfitting
+<!-- anki:1774328227221 -->
 
 **Front:**
 A model performs great on training data but generalizes poorly to new instances. What is likely wrong, and what are possible solutions?
@@ -215,6 +229,7 @@ Possible solutions:
 ---
 
 ### Test Set vs Validation Set
+<!-- anki:1774328451328 -->
 
 **Front:**
 What is the difference between a test set and a validation set?
@@ -230,6 +245,7 @@ The validation set is separate from the test set — it is not a subset of it. I
 ---
 
 ### Train-Dev Set
+<!-- anki:1774328498837 -->
 
 **Front:**
 What is a train-dev set, and when would you use one?

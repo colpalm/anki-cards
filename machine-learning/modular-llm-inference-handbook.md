@@ -6,6 +6,7 @@
 ## Cards
 
 ### Inference vs. Serving
+<!-- anki:1787193590065 -->
 
 **Front:**
 What is the difference between LLM *inference* and LLM *serving*?
@@ -24,6 +25,7 @@ ml::llm::inference source::modular-handbook
 ---
 
 ### Stages of an LLM Inference Request
+<!-- anki:1787193649016 -->
 
 **Front:**
 What stages does a request pass through in an LLM inference server?
@@ -42,9 +44,10 @@ ml::llm::inference source::modular-handbook
 ---
 
 ### Why LLM Inference Is Structurally Different from Classic ML Inference
+<!-- anki:1787193736519 -->
 
 **Front:**
-How does serving an LLM differ structurally from serving a traditional ML model (e.g. a classifier)? 3 main points in answer.
+How does serving an LLM differ structurally from serving a traditional ML model (e.g. a classifier)? (3 differences)
 
 **Back:**
 Traditional model: **one request = one forward pass.** Cost is fixed, latency is predictable, the call is stateless.

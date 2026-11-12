@@ -9,6 +9,7 @@
 ## Cards
 
 ### Floor Division with Negatives
+<!-- anki:1766465706077 -->
 **Front:**
 What is the result of `-7 // 2` in Python? Why?
 
@@ -24,6 +25,7 @@ Contrast with integer division in C/Java which truncates toward zero (would give
 ---
 
 ### Boolean Operator Precedence
+<!-- anki:1766465876306 -->
 **Front:**
 What is the order of precedence for Python's boolean operators `not`, `and`, `or`?
 
@@ -43,6 +45,7 @@ Use parentheses to make intent clear.
 ---
 
 ### Falsy Values
+<!-- anki:1766465908292 -->
 **Front:**
 List all the falsy values in Python (9 listed).
 
@@ -62,6 +65,7 @@ Pythonic: `if my_list:` instead of `if len(my_list) > 0:`
 ---
 
 ### Mutable Default Argument Pitfall
+<!-- anki:1766466036078 -->
 **Front:**
 What's wrong with this code?
 ```python
@@ -90,6 +94,7 @@ def append_to(item, lst=None):
 ---
 
 ### String Reversal with Slicing
+<!-- anki:1766466137793 -->
 **Front:**
 How do you reverse a string in Python using slicing? Explain why it works.
 
@@ -113,6 +118,7 @@ Works the same for lists and tuples.
 ---
 
 ### Negative Indexing
+<!-- anki:1766466175422 -->
 **Front:**
 Given `lst = [10, 20, 30, 40, 50]`, what do these return?
 - `lst[-1]`
@@ -129,6 +135,7 @@ Negative indices count backward from the end, starting at `-1`.
 ---
 
 ### Dictionary .get() Method
+<!-- anki:1766466247442 -->
 **Front:**
 What's the difference between `d[key]` and `d.get(key, default)`?
 
@@ -152,6 +159,7 @@ freq[x] = freq.get(x, 0) + 1
 ---
 
 ### Empty Set Creation
+<!-- anki:1766466290955 -->
 **Front:**
 How do you create an empty set in Python? What does `{}` create?
 
@@ -174,6 +182,7 @@ type({1})     # <class 'set'>
 ---
 
 ### Generator Expression vs List Comprehension
+<!-- anki:1766466851032 -->
 **Front:**
 What's the difference between these two? When would you use one over the other?
 ```python
@@ -203,6 +212,7 @@ Second: **Generator expression** — yields values one at a time, never storing 
 ---
 
 ### Different Error Types
+<!-- anki:1766466900410 -->
 **Front:**
 Describe the three types of errors:
 - **Syntax Error**
@@ -217,6 +227,7 @@ Describe the three types of errors:
 ---
 
 ### .sort() vs sorted()
+<!-- anki:1766520326473 -->
 **Front:**
 What's the difference between `list.sort()` and `sorted(list)`? Give the time and space complexity of each.
 
@@ -242,6 +253,7 @@ Both have O(n log n) time complexity (Timsort).
 ---
 
 ### Reverse Sorting
+<!-- anki:1766520425766 -->
 **Front:**
 How do you sort a list in descending order in Python? Show two approaches.
 
@@ -266,6 +278,7 @@ Prefer `reverse=True` — cleaner and single operation.
 ---
 
 ### Custom Sort with key Parameter
+<!-- anki:1766521065046 -->
 **Front:**
 How does the `key` parameter work in Python's `sort()`/`sorted()`? 
 
@@ -294,8 +307,9 @@ sorted(fruits, key=str.lower)   # ['Apple', 'banana']
 ---
 
 ### Lambda Functions for Sorting
+<!-- anki:1766520664900 -->
 **Front:**
-What is a lambda function? Write a lambda to sort tuples by their second element.
+What is a lambda function? Write a lambda to sort a list of tuples by their second element.
 
 **Back:**
 A **lambda** is an anonymous single-expression function.
@@ -320,6 +334,7 @@ Use lambdas for simple, one-off sort keys.
 ---
 
 ### Multi-Level Sorting with Tuple Keys
+<!-- anki:1770777224674 -->
 
 **Front:**
 How do you sort by multiple criteria in Python (e.g., by score descending, then by name ascending for ties)?
@@ -346,6 +361,7 @@ students.sort(key=lambda s: (-s['score'], s['name']))
 ---
 
 ### String Sorting (Lexicographical)
+<!-- anki:1766521609337 -->
 **Front:**
 How are strings sorted by default in Python? What's the result of sorting `["grape", "Apple", "banana"]`?
 
@@ -369,6 +385,7 @@ fruits.sort(key=str.lower)
 ---
 
 ### Unpacking
+<!-- anki:1766521660839 -->
 **Front:**
 What is unpacking in Python? Show how to unpack a list/tuple, swap variables, and unpack in a loop.
 
@@ -397,6 +414,7 @@ x, y = [1, 2, 3]  # ValueError: too many values to unpack
 ---
 
 ### Starred Unpacking (`*`)
+<!-- anki:1788232661563 -->
 **Front:**
 Plain unpacking requires an exact match of variables to values. How do you unpack a variable-length iterable?
 
@@ -417,6 +435,7 @@ a, *mid, b = [1, 2, 3, 4]     # a = 1,  mid = [2, 3],  b = 4
 ---
 
 ### `*` and `**`: Collect vs Spread
+<!-- anki:1788233028932 -->
 **Front:**
 `*` and `**` show up in function definitions, function calls, assignments, and literals. What decides whether they collect or spread?
 
@@ -441,6 +460,7 @@ Not "definition vs call" — assignment and literals obey the same rule with no 
 ---
 
 ### Spreading Arguments at a Call Site
+<!-- anki:1788233124669 -->
 **Front:**
 Given `args = [3, 5]` and `config = {"host": "localhost", "port": 8080}`, how do you pass each into a function as individual arguments?
 
@@ -462,6 +482,7 @@ The same `*` works inside list/tuple/set literals, where it beats `+` because it
 ---
 
 ### `def f(*args, **kwargs)`
+<!-- anki:1788233268774 -->
 **Front:**
 What do `*args` and `**kwargs` do in a function definition, and what type is each?
 
@@ -489,6 +510,7 @@ def wrapper(*args, **kwargs):
 ---
 
 ### Enumerate
+<!-- anki:1766521730847 -->
 **Front:**
 What does `enumerate()` do? Why use it instead of `range(len(list))`?
 
@@ -518,6 +540,7 @@ for i, name in enumerate(names, start=1):
 ---
 
 ### Zip
+<!-- anki:1766521854172 -->
 **Front:**
 What does `zip()` do? What is its time and space complexity?
 
@@ -535,7 +558,7 @@ for name, score in zip(names, scores):
 # Charlie: 88
 ```
 
-**Complexity:** O(1) time and space — returns an iterator, doesn't create a list in memory.
+**Complexity:** `zip()` returns an iterator — O(1) to create, O(1) space. It doesn't build a list in memory, so it's memory-efficient for large sequences.
 
 Stops at shortest iterable:
 ```python
@@ -545,6 +568,7 @@ list(zip([1, 2, 3], ['a', 'b']))  # [(1, 'a'), (2, 'b')]
 ---
 
 ### Iterable vs Iterator vs Generator
+<!-- anki:1791948600759 -->
 **Front:**
 How do iterables, iterators, and generators relate? Why can you loop over a list twice but not a `zip()` result?
 
@@ -567,6 +591,7 @@ A `for` loop calls `iter()` once, then `next()` until `StopIteration` — which 
 ---
 
 ### Lazy Iterators Are One-Shot
+<!-- anki:1788315319545 -->
 **Front:**
 What happens if you iterate twice over the result of `enumerate()`, `zip()`, `map()`, or `filter()`?
 
@@ -595,6 +620,7 @@ for r in rows:                 # never runs
 ---
 
 ### List pop() vs pop(index) Time Complexity
+<!-- anki:1766549557241 -->
 **Front:**
 What's the time complexity difference between `list.pop()` and `list.pop(index)`? Why?
 
@@ -613,6 +639,7 @@ nums.pop(0)     # O(n) - removes 1, shifts [2,3,4] left
 ---
 
 ### List extend() vs Concatenation
+<!-- anki:1766549652471 -->
 **Front:**
 What's the difference between `list.extend(other)` and `list + other`?
 
@@ -638,6 +665,7 @@ c = a + b      # c is new list, a unchanged
 ---
 
 ### List Shallow Copy vs Deep Copy
+<!-- anki:1766549806526 -->
 **Front:**
 When do you need `copy.deepcopy()` instead of `list.copy()` for lists?
 
@@ -683,6 +711,7 @@ Notes:
 ---
 
 ### List Membership Check is O(n)
+<!-- anki:1766549911402 -->
 **Front:**
 What's the time complexity of `x in my_list`? If you need to do this check repeatedly, what should you use instead?
 
@@ -706,6 +735,7 @@ Lists are for ordered sequences. Sets are for fast membership testing.
 ---
 
 ### List insert() is O(n)
+<!-- anki:1766550043369 -->
 **Front:**
 What is the time complexity of `list.insert(index, value)`? Why?
 
@@ -727,6 +757,7 @@ nums.insert(0, 0)  # Worst case: shifts ALL elements
 ---
 
 ### List Comprehension Limitations
+<!-- anki:1766550176374 -->
 **Front:**
 What control flow statements can you NOT use inside a list comprehension?
 
@@ -750,6 +781,7 @@ List comprehensions are for **transformations and filtering**, not complex contr
 ---
 
 ### List remove() — By Value, Not Index
+<!-- anki:1766550250790 -->
 **Front:**
 How does `list.remove(...)` differ from `list.pop(...)`?
 
@@ -774,6 +806,7 @@ nums.pop(1)        # [1, 2, 4] — removes element at index 1
 ---
 
 ### List index() vs in Operator
+<!-- anki:1766550348492 -->
 **Front:**
 When should you use `list.index(value)` vs `value in list`?
 
@@ -804,6 +837,7 @@ if value in my_list:
 ---
 
 ### Using a List as a Stack in Python
+<!-- anki:1766599171292 -->
 **Front:**
 How do you use a list as a stack in Python? What operations (4 listed in card) do you use and what are their time complexities?
 
@@ -827,6 +861,7 @@ removed = stack.pop() # Pop (2)
 ---
 
 ### Python Queue with collections.deque
+<!-- anki:1766599236350 -->
 **Front:**
 How do you implement a FIFO queue in Python? Show the import and the enqueue/dequeue operations.
 
@@ -850,6 +885,7 @@ Both operations are O(1).
 ---
 
 ### Why deque Over List for Queues
+<!-- anki:1766599280861 -->
 **Front:**
 Why should you use `collections.deque` instead of a list for queue operations in Python?
 
@@ -878,6 +914,7 @@ queue.popleft()  # No shifting
 ---
 
 ### deque Operations and Time Complexity
+<!-- anki:1766599354101 -->
 **Front:**
 What are the four `deque` operations for adding/removing from both ends, and their time complexities? What about indexing?
 
@@ -932,6 +969,7 @@ It degrades *worse* than linear once the block chain outgrows CPU cache: each ho
 ---
 
 ### Working with 2D Lists: Indexing and Dimensions
+<!-- anki:1766605446370 -->
 **Front:**
 How do you access elements and get dimensions (numbers of rows and columns) of a 2D list in Python?
 
@@ -958,6 +996,7 @@ cols = len(grid[0])  # 3
 ---
 
 ### The [[value] * n] * m Trap
+<!-- anki:1766605499843 -->
 **Front:**
 Why does `[[0] * 3] * 2` cause unexpected behavior when modifying elements?
 
@@ -979,6 +1018,7 @@ This is one of the most common 2D list bugs in Python.
 ---
 
 ### Proper 2D Grid Initialization
+<!-- anki:1766605539878 -->
 **Front:**
 How do you correctly initialize a 2D grid with a default value in Python? What is the time complexity?
 
@@ -1004,6 +1044,7 @@ The outer comprehension runs `range(rows)` times, creating a **new** inner list 
 ---
 
 ### Dict Deletion: del vs pop()
+<!-- anki:1766607305715 -->
 **Front:**
 What's the difference between `del d[key]` and `d.pop(key)` for removing dictionary entries?
 
@@ -1035,6 +1076,7 @@ d.pop('x', 'missing')   # Returns 'missing', no error
 ---
 
 ### defaultdict for Cleaner Code
+<!-- anki:1766607457040 -->
 **Front:**
 What is `defaultdict` and what does it avoid?
 - Can you provide a custom value?
@@ -1067,6 +1109,7 @@ print(scores['new_player'])  # 100
 ---
 
 ### Counter for Frequency Counting
+<!-- anki:1766607575614 -->
 **Front:**
 What is `Counter` and how do you use it to count occurrences?
 - What if you try to access a missing key?
@@ -1103,6 +1146,7 @@ print(freq)  # Counter({3: 4, 2: 2, 1: 2, 4: 2})
 ---
 
 ### Dict and Set Comprehension
+<!-- anki:1766607825415 -->
 **Front:**
 What is the syntax for dict and set comprehension in Python?
 
@@ -1145,6 +1189,7 @@ unique_doubled = {n * 2 for n in nums}
 ---
 
 ### Iterating Over Dicts: keys(), values(), items()
+<!-- anki:1766608493658 -->
 **Front:**
 What do `keys()`, `values()`, and `items()` return, and what are their time complexities?
 
@@ -1182,6 +1227,7 @@ Convert to list if needed: `list(d.keys())`
 ---
 
 ### Set Operations: add(), remove(), discard()
+<!-- anki:1766608879264 -->
 **Front:**
 How do you add and remove elements from a set? What's the difference between the two removal methods?
 
@@ -1214,6 +1260,7 @@ s.remove('x')   # KeyError: 'x'
 ---
 
 ### Tuple Keys in Dicts and Sets
+<!-- anki:1766608946392 -->
 **Front:**
 Why can tuples be used as dict keys or set members, but lists cannot?
 
@@ -1249,6 +1296,7 @@ hash((1, 2, [3, 4]))  # TypeError: unhashable type: 'list'
 ---
 
 ### What is a Heap / Priority Queue
+<!-- anki:1767068140926 -->
 **Front:**
 What is a heap (priority queue)? What is the heap property? When do heaps shine compared to sorting? When should you not use them?
 
@@ -1276,6 +1324,7 @@ Unlike a BST, there's no left/right ordering — both children just need to sati
 ---
 
 ### Python Heap Basics (push, peek)
+<!-- anki:1767068736260 -->
 **Front:**
 How do you create a heap, add elements, and access the minimum in Python? What are the time complexities?
 
@@ -1302,10 +1351,13 @@ top = heap[0]                # Peek at minimum (1)
 ---
 
 ### Heap Pop
+<!-- anki:1767069231097 -->
 **Front:**
 How do you remove and return the minimum element from a heap? What is the time complexity? What happens if the heap is empty?
 
 **Back:**
+`heapq.heappop(heap)`
+
 ```python
 import heapq
 
@@ -1329,6 +1381,7 @@ heapq.heappop(empty)  # IndexError: index out of range
 ---
 
 ### heappushpop vs heapreplace
+<!-- anki:1788923054676 -->
 **Front:**
 What do `heappushpop` and `heapreplace` do, and how do they differ? What pattern are they for?
 
@@ -1368,6 +1421,7 @@ This is the shape behind `nlargest`, "keep the 10 best checkpoints", and top-k f
 ---
 
 ### Heapify
+<!-- anki:1767069281085 -->
 **Front:**
 How do you convert an existing list into a heap? Why is this more efficient than pushing elements one by one?
 
@@ -1395,6 +1449,7 @@ Pushing one by one sifts each element **up** from the bottom. As the tree grows,
 ---
 
 ### Max Heap in Python
+<!-- anki:1767069399217 -->
 **Front:**
 Python only provides a min heap. How do you implement a max heap?
 
@@ -1425,6 +1480,7 @@ next_largest = -heapq.heappop(max_heap)  # 4
 ---
 
 ### Custom Heap Priorities with Tuples
+<!-- anki:1767069462862 -->
 **Front:**
 How do you create a heap with custom priorities in Python (e.g., sort by absolute value)?
 
@@ -1455,6 +1511,7 @@ while heap:
 ---
 
 ### nsmallest and nlargest
+<!-- anki:1767070269351 -->
 **Front:**
 How do you efficiently find the k smallest or largest elements from a collection?
 
@@ -1493,6 +1550,7 @@ heapq.nsmallest(2, words, key=len)  # ['pie', 'apple']
 ---
 
 ### When to Use Sorted Containers
+<!-- anki:1767149417972 -->
 **Front:**
 When should you use `SortedDict` or `SortedSet` from the `sortedcontainers` library instead of regular dict/set?
 
@@ -1516,6 +1574,7 @@ from sortedcontainers import SortedDict, SortedSet
 ---
 
 ### SortedDict Basics
+<!-- anki:1767149516931 -->
 **Front:**
 How do you create and use a `SortedDict`? Show insertion, access, deletion, and lookup.
 
@@ -1549,6 +1608,7 @@ Same interface as regular dict, but keys are always sorted. No duplicate keys al
 ---
 
 ### SortedDict popitem() with Index
+<!-- anki:1767149987515 -->
 **Front:**
 How does `popitem()` work differently on a `SortedDict` compared to a regular dict?
 
@@ -1575,6 +1635,7 @@ Raises `KeyError` if dict is empty.
 ---
 
 ### SortedSet Basics
+<!-- anki:1767150110388 -->
 **Front:**
 How do you create and use a `SortedSet`? Show add, remove, discard, lookup, and clear.
 
@@ -1608,6 +1669,7 @@ Elements always in ascending order. No duplicates allowed.
 ---
 
 ### SortedSet pop() Behavior
+<!-- anki:1767150243305 -->
 **Front:**
 How does `pop()` work on a `SortedSet`? How do you get the smallest vs largest element?
 
@@ -1634,6 +1696,7 @@ Raises `KeyError` if set is empty.
 ---
 
 ### `with` Statement for File Handling
+<!-- anki:1770696454553 -->
 **Front:**
 Why should you use `with open()` instead of manually calling `open()` and `close()`? Show the pattern.
 
@@ -1659,6 +1722,7 @@ The `with` statement works with any **context manager** (not just files) — dat
 ---
 
 ### File Reading: readlines() vs Iterating the File Object
+<!-- anki:1770696495533 -->
 **Front:**
 What's the difference between `f.readlines()` and iterating directly over a file object? When does it matter?
 
@@ -1691,6 +1755,7 @@ with open('large_file.txt', 'r') as f:
 ---
 
 ### map() Function
+<!-- anki:1770783864547 -->
 **Front:**
 What does `map()` do, what does it return, and when would you use it over a list comprehension?
 
@@ -1719,6 +1784,7 @@ If you find yourself writing `map(lambda ..., seq)`, a list comprehension is alm
 ---
 
 ### filter() Function
+<!-- anki:1770783936941 -->
 **Front:**
 What does `filter()` do, what does it return, and when would you use it over a list comprehension?
 
@@ -1750,6 +1816,7 @@ The `filter(None, ...)` pattern is the one case where `filter()` is notably more
 ---
 
 ### json.loads() vs json.dumps()
+<!-- anki:1770864006253 -->
 **Front:**
 What do `json.loads()` and `json.dumps()` do? What do the "s" suffixes stand for?
 
@@ -1781,6 +1848,7 @@ json.dumps(data, sort_keys=True)    # Alphabetize keys
 ---
 
 ### requests.get() Basics
+<!-- anki:1770864191455 -->
 **Front:**
 How do you make an HTTP GET request in Python? What are the key attributes of the response object?
 

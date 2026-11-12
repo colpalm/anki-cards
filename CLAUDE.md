@@ -12,7 +12,6 @@ This repository contains Anki flashcards for building deep, lasting knowledge ac
 - Lead with the concept, use concrete examples to illustrate
 - Keep cards atomic - one idea per card
 - Avoid overly specific examples that don't generalize
-- Prefer bullet points over tables - markdown tables don't translate well to Anki cards
 - Be concise and direct. Less is more
 - Note: Feel free to recommend cards if you think it is important and related to a current topic even if it is not present in the notes.
 
@@ -20,7 +19,7 @@ This repository contains Anki flashcards for building deep, lasting knowledge ac
 Reference existing cards in the repo for format and style. General structure:
 
 ```markdown
-## Descriptive Title
+### Descriptive Title
 
 **Front:**
 The question or prompt
@@ -34,12 +33,16 @@ topic::tags source::tag
 ---
 ```
 
+When the answer is a fixed set meant to be recalled in full (steps, challenges, benefits), end the front with a count naming what's counted, e.g. `(3 challenges)`. Otherwise it's easy to recall part of the set and grade yourself as correct. Skip the count when the bullets only structure an explanation (the two sides of a tradeoff) or the front already names the items.
+
 ### Tags
 
-Two orthogonal axes, space-separated on the `**Tags:**` line. Anki tags are hierarchical via `::`.
+Two orthogonal axes, space-separated. Anki tags are hierarchical via `::`.
 
 - **Topic** — e.g. `ml::llm::inference`. Nest under the broadest domain so tags roll up; add a deeper level only when a topic outgrows a flat list (~20 cards).
 - **Source** — one per file, matching the Sources section, e.g. `source::modular-handbook`.
+
+Each file's default tags live in `FILE_TAGS` in `anki_sync.py`. A card's `**Tags:**` line is optional and *replaces* the file defaults for that card.
 
 Skip difficulty and status tags — Anki's scheduler already tracks that.
 
@@ -71,6 +74,13 @@ anki-cards/
 ```
 
 Each file should include a **Sources** section at the top listing books, courses, or documentation the cards were derived from.
+
+### Syncing to Anki
+
+See the README for how to sync cards to Anki. Read it before adding a card file or touching the `<!-- anki:... -->` ID comments.
+
+- After adding or editing cards, run the dry run (`uv run anki_sync.py`) and show the user the report. Run `--apply` only after the user approves — reviewing the cards is their final read before they reach Anki.
+- Only Basic (Front/Back) cards sync. Cloze or Image Occlusion cards have to be added in Anki by hand, so check with the user before writing one.
 
 ### What Makes a Good Card
 
