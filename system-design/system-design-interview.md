@@ -361,3 +361,137 @@ Example: when a user uploads a photo, the web server queues image-processing job
 system-design::messaging source::system-design-interview-xu
 
 ---
+
+### Chapter 2: Back-of-the-Envelope Estimation
+
+### Latency Orders of Magnitude
+<!-- anki:1795207372329 -->
+
+**Front:**
+Roughly how long do each of these take: a memory read, an SSD random read, a round trip within a data center, a hard disk seek, and a round trip across continents?
+
+**Back:**
+- **Memory read**: ~100 ns
+- **SSD random read**: ~100 µs (about 1,000x slower than memory)
+- **Round trip within a data center**: ~0.5 ms
+- **Hard disk seek**: ~10 ms
+- **Round trip across continents**: ~150 ms
+
+Exact values vary with hardware, so know the scale and the gaps between them rather than precise figures. Each step down this list is roughly 10x to 1,000x slower than the one before.
+
+**Tags:**
+system-design::estimation source::system-design-interview-xu
+
+---
+
+### Design Rules from Latency Numbers
+<!-- anki:1795207372369 -->
+
+**Front:**
+What design rules follow from the relative latencies of memory, disk, and network? (4 rules)
+
+**Back:**
+- **Keep hot data in memory**: a memory read is about 1,000x faster than an SSD read and far faster than a disk seek. This is why caches exist.
+- **Avoid disk seeks; read sequentially**: on a hard disk, each seek costs ~10 ms of mechanical movement. Reading one long sequential run pays that cost only once.
+- **Compress data before sending it over the network**: simple compression takes microseconds per KB, which is cheaper than the network time it saves.
+- **Keep cross-region calls off the critical path**: a cross-continent round trip (~150 ms) is ~300x a round trip within a data center. Serve each request from data in the user's own region instead.
+
+**Tags:**
+system-design::estimation source::system-design-interview-xu
+
+---
+
+### Nines of Availability
+<!-- anki:1795207372421 -->
+
+**Front:**
+Roughly how much downtime per year do 99.9%, 99.99%, and 99.999% availability allow?
+
+**Back:**
+- **99.9% ("three nines")**: ~9 hours per year
+- **99.99% ("four nines")**: ~1 hour per year
+- **99.999% ("five nines")**: ~5 minutes per year
+
+Each extra nine cuts allowed downtime by 10x, and each one is much harder and more expensive to reach. Cloud providers' SLAs usually promise 99.9% or higher.
+
+**Tags:**
+system-design::availability source::system-design-interview-xu
+
+---
+
+### Availability of Serial vs. Redundant Components
+<!-- anki:1795207372472 -->
+
+**Front:**
+How do you calculate overall availability when components are chained together (in series) vs. duplicated (in parallel)?
+
+**Back:**
+- **In series** (a request needs every component), availabilities **multiply**: three services at 99.9% each give 0.999³ ≈ **99.7%**. Every dependency added to the request path lowers availability.
+- **In parallel** (any one copy is enough), the system fails only if **every copy fails**: two copies at 99% each give 1 − 0.01² = **99.99%**.
+
+This is the math behind "build redundancy at every tier". It assumes the copies fail independently, which is why redundant copies go in separate machines, racks, or data centers.
+
+**Tags:**
+system-design::availability source::system-design-interview-xu
+
+---
+
+### Estimating QPS
+<!-- anki:1795207372525 -->
+
+**Front:**
+How do you estimate average and peak queries per second (QPS) from daily usage?
+
+**Back:**
+A day has 86,400 seconds, which rounds to **~10⁵**. So:
+- **Average QPS ≈ requests per day / 10⁵**
+- **Peak QPS ≈ 2x average** (a common assumption; state it out loud)
+
+Example (Twitter): 150M daily active users × 2 tweets each = 300M tweets per day.
+300M / 10⁵ ≈ **3,000 QPS** (the precise answer is ~3,500), with a peak of **~7,000 QPS**.
+
+**Tags:**
+system-design::estimation source::system-design-interview-xu
+
+---
+
+### Estimating Storage
+<!-- anki:1795207372576 -->
+
+**Front:**
+How do you estimate storage needs for a system?
+
+**Back:**
+**Storage = users × items per user per day × size per item × retention period**
+
+Example (Twitter media): 150M daily users × 2 tweets × 10% containing media × 1 MB per media file
+= **30 TB per day**
+× 365 days × 5 years ≈ **55 PB**
+
+Size the largest data type first; it usually dominates. Here media dwarfs the text and metadata of each tweet.
+
+**Tags:**
+system-design::estimation source::system-design-interview-xu
+
+---
+
+### Using Byte Units to Estimate Quickly
+<!-- anki:1795207372625 -->
+
+**Front:**
+How do byte units speed up storage arithmetic in estimates?
+
+**Back:**
+Each unit step matches a step in counting:
+- **Thousand → KB**
+- **Million → MB**
+- **Billion → GB**
+- **Trillion → TB**
+- **Quadrillion → PB**
+
+So a count times a size converts directly: **1 million users × 1 KB each = 1 GB**, and **1 billion records × 1 KB = 1 TB**, with no long multiplication. (Strictly, 1 KB is 2¹⁰ = 1,024 bytes, but ~1,000 is close enough for estimates.)
+
+**Tags:**
+system-design::estimation source::system-design-interview-xu
+
+---
